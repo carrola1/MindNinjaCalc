@@ -4,7 +4,8 @@
 import sys
 from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,degrees,radians
 from PyQt5.QtWidgets import QTextEdit,QApplication,QGridLayout,QWidget
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon,QColor,QTextCharFormat,QFont,QSyntaxHighlighter
+from PyQt5.QtCore import QRegExp
 
 
 class Example(QWidget):
@@ -15,6 +16,7 @@ class Example(QWidget):
 
         # Widgets
         self.textEdit = QTextEdit()
+        self.highlight = KeywordHighlighter(self.textEdit.document())
         self.resDisp = QTextEdit(readOnly=True)
 
         # Text Fields
@@ -58,6 +60,7 @@ class Example(QWidget):
     def updateResults(self):
         # Get text and break into lines
         text = self.textEdit.toPlainText()
+        self.highlight.highlightBlock(text)
         textLines = text.split("\n")
 
         # Find change
@@ -83,6 +86,7 @@ class Example(QWidget):
             self.symDict[newVar] = self.symDict.pop(self.keyList[lineNum])
             self.symDict[newVar] = self.resText[lineNum]
             self.keyList[lineNum] = newVar
+            self.highlight.updateRules(self.keyList)
         else:
             self.evalExp(newLine, lineNum)
         return
@@ -96,6 +100,71 @@ class Example(QWidget):
         except:
             self.resText[lineNum] = ''
         return
+
+
+class KeywordHighlighter (QSyntaxHighlighter):
+
+    def __init__(self, document):
+        QSyntaxHighlighter.__init__(self, document)
+
+        self.keywords = ['floor', 'ceiling', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos', 'tan',
+                    'asin', 'acos', 'atan', 'radians', 'degrees']
+        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x']
+
+        self.styles =   {   'keyword': self.styleFormat('yellow', 'bold'),
+                            'operators': self.styleFormat('light blue'),
+                            'symbols': self.styleFormat('light green', 'bold')}
+
+        rules = []
+        # Keyword, operator, and brace rules
+        rules += [(r'\b%s\b' % w, 0, self.styles['keyword'])
+            for w in self.keywords]
+        rules += [(r'%s' % o, 0, self.styles['operators'])
+            for o in self.operators]
+
+        # Build a QRegExp for each pattern
+        self.intRules = [(QRegExp(pat), index, fmt)
+            for (pat, index, fmt) in rules]
+
+        self.rules = self.intRules
+
+    def styleFormat(self, color, style=''):
+        """Return a QTextCharFormat with the given attributes.
+        """
+        _color = QColor()
+        _color.setNamedColor(color)
+
+        _format = QTextCharFormat()
+        _format.setForeground(_color)
+        if 'bold' in style:
+            _format.setFontWeight(QFont.Bold)
+        if 'italic' in style:
+            _format.setFontItalic(True)
+
+        return _format
+
+    def updateRules(self,symbols):
+        newRules = []
+        # Keyword, operator, and brace rules
+        newRules += [(r'\b%s\b' % w, 0, self.styles['symbols'])
+                  for w in symbols]
+        newRules = [(QRegExp(pat), index, fmt)
+                    for (pat, index, fmt) in newRules]
+        self.rules = self.intRules + newRules
+
+    def highlightBlock(self, text):
+        """Apply syntax highlighting to the given block of text.     """
+        # Do other syntax formatting
+        for expression, nth, thisFormat in self.rules:
+            index = expression.indexIn(text, 0)
+            while index >= 0:
+                # We actually want the index of the nth match
+                index = expression.pos(nth)
+                length = len(expression.cap(nth))
+                self.setFormat(index, length, thisFormat)
+                index = expression.indexIn(text, index + length)
+        self.setCurrentBlockState(0)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
