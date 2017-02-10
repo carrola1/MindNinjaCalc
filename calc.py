@@ -14,10 +14,12 @@ class Example(QWidget):
         # Parameters
         self.maxLines = 100
 
-        # Widgets
+        # Create Widgets
         self.textEdit = QTextEdit()
-        self.highlight = KeywordHighlighter(self.textEdit.document())
         self.resDisp = QTextEdit(readOnly=True)
+
+        # Syntax Highlighter
+        self.highlight = KeywordHighlighter(self.textEdit.document())
 
         # Text Fields
         self.curText = ['']*self.maxLines
@@ -45,8 +47,13 @@ class Example(QWidget):
         self.textEdit.setStyleSheet("background-color: #1f3960; color: white; font-size: 20px")
         self.resDisp.setStyleSheet("background-color: #8191aa; font-size: 20px")
 
-        # Callback
+        # Do not allow text wrapping
+        self.textEdit.setLineWrapMode(0)
+        self.resDisp.setLineWrapMode(0)
+
+        # Text Changed Callbacks
         self.textEdit.textChanged.connect(self.updateResults)
+        self.resDisp.verticalScrollBar().valueChanged.connect(self.textEdit.verticalScrollBar().setValue)
 
         # Layout
         grid = QGridLayout()
@@ -73,7 +80,7 @@ class Example(QWidget):
 
         # Update results
         newResults = "\n"
-        newResults = newResults.join(self.resText)
+        newResults = newResults.join(self.resText[0:len(textLines)])
         self.resDisp.setPlainText(newResults)
         return
 
@@ -169,4 +176,5 @@ class KeywordHighlighter (QSyntaxHighlighter):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
+    ex.setWindowTitle('Monster Calc')
     sys.exit(app.exec_())
