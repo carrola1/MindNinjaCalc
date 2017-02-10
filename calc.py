@@ -5,10 +5,10 @@ import sys
 from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,degrees,radians
 from PyQt5.QtWidgets import QTextEdit,QApplication,QGridLayout,QWidget
 from PyQt5.QtGui import QIcon,QColor,QTextCharFormat,QFont,QSyntaxHighlighter
-from PyQt5.QtCore import QRegExp
+from PyQt5.QtCore import QRegExp,QEvent
 
 
-class Example(QWidget):
+class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         # Parameters
@@ -51,9 +51,13 @@ class Example(QWidget):
         self.textEdit.setLineWrapMode(0)
         self.resDisp.setLineWrapMode(0)
 
+        # Turn off display scrollbar and synchronize scrolling
+        self.resDisp.setVerticalScrollBarPolicy(1)
+        self.textEdit.verticalScrollBar().valueChanged.connect(self.resDisp.verticalScrollBar().setValue)
+        self.resDisp.verticalScrollBar().valueChanged.connect(self.textEdit.verticalScrollBar().setValue)
+
         # Text Changed Callbacks
         self.textEdit.textChanged.connect(self.updateResults)
-        self.resDisp.verticalScrollBar().valueChanged.connect(self.textEdit.verticalScrollBar().setValue)
 
         # Layout
         grid = QGridLayout()
@@ -107,7 +111,6 @@ class Example(QWidget):
         except:
             self.resText[lineNum] = ''
         return
-
 
 class KeywordHighlighter (QSyntaxHighlighter):
 
@@ -175,6 +178,6 @@ class KeywordHighlighter (QSyntaxHighlighter):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
+    ex = MainWindow()
     ex.setWindowTitle('Monster Calc')
     sys.exit(app.exec_())
