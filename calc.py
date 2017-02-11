@@ -117,8 +117,9 @@ class KeywordHighlighter (QSyntaxHighlighter):
     def __init__(self, document):
         QSyntaxHighlighter.__init__(self, document)
 
-        self.keywords = ['floor', 'ceiling', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos', 'tan',
-                    'asin', 'acos', 'atan', 'radians', 'degrees']
+        self.keywords = ['floor', 'ceiling', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
+                            'tan','abs','asin', 'acos', 'atan', 'radians', 'degrees','hex',
+                            'bin','dec','min','max','sum']
         self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x']
 
         self.styles =   {   'keyword': self.styleFormat('yellow', 'bold'),
