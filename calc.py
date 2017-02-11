@@ -50,7 +50,7 @@ class MainWindow(QMainWindow):
         fileMenu = menubar.addMenu('&File')
         funcMenu = menubar.addMenu('&Functions')
 
-        self.setStyleSheet("background-color: #b8b9ba")
+        self.setStyleSheet("background-color: rgb(49,49,49)")
         self.show()
 
 class MainWidget(QWidget):
@@ -63,7 +63,7 @@ class MainWidget(QWidget):
         self.textEdit = QTextEdit()
         self.resDisp = QTextEdit(readOnly=True)
         self.titleBar = QLabel()
-        self.titleBar.setText('Monster Calc')
+        self.titleBar.setText('MONSTER CALC')
 
         # Syntax Highlighter
         self.highlight = KeywordHighlighter(self.textEdit.document())
@@ -95,10 +95,9 @@ class MainWidget(QWidget):
 
     def initUI(self):
         # Widget Styles
-        self.textEdit.setStyleSheet("background-color: #1f3960; color: white; font-size: 20px")
-        self.resDisp.setStyleSheet("background-color: #8191aa; font-size: 20px")
-        self.titleBar.setStyleSheet("background-color: #b8b9ba; color: #1f3960; font-size: 30px;")
-        self.titleBar.setAlignment(Qt.AlignCenter)
+        self.textEdit.setStyleSheet("background-color: #1f3960; color: white; font-size: 20px; border: black")
+        self.resDisp.setStyleSheet("background-color: #8191aa; font-size: 20px; border: black")
+        self.titleBar.setStyleSheet("background-color: rgb(49,49,49); color: #a538d1; font-size: 25px; font: bold")
 
         # Do not allow text wrapping
         self.textEdit.setLineWrapMode(0)
@@ -115,7 +114,7 @@ class MainWidget(QWidget):
         # Layout
         grid = QGridLayout()
         self.setLayout(grid)
-        self.titleBar.setFixedHeight(25)
+        self.titleBar.setFixedHeight(20)
         grid.addWidget(self.titleBar,0,0,1,2)
         grid.addWidget(self.textEdit, 1, 0)
         grid.addWidget(self.resDisp, 1, 1)
@@ -175,10 +174,10 @@ class KeywordHighlighter (QSyntaxHighlighter):
         self.keywords = ['floor', 'ceiling', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
                             'tan','abs','asin', 'acos', 'atan', 'radians', 'degrees','hex',
                             'bin','dec','min','max','sum','pi','abs','bitget']
-        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x']
+        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x','=']
 
         self.styles =   {   'keyword': self.styleFormat('yellow', 'bold'),
-                            'operators': self.styleFormat('light blue'),
+                            'operators': self.styleFormat('#f2aa37'),
                             'symbols': self.styleFormat('light green', 'bold')}
 
         rules = []
