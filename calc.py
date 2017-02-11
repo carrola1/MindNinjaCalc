@@ -3,12 +3,57 @@
 
 import sys
 from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,degrees,radians
-from PyQt5.QtWidgets import QTextEdit,QApplication,QGridLayout,QWidget
-from PyQt5.QtGui import QIcon,QColor,QTextCharFormat,QFont,QSyntaxHighlighter
-from PyQt5.QtCore import QRegExp,QEvent
+from PyQt5.QtWidgets import QTextEdit,QApplication,QGridLayout,QWidget,QLabel,QMainWindow,QAction,QFileDialog,qApp
+from PyQt5.QtGui import QIcon,QColor,QTextCharFormat,QFont,QSyntaxHighlighter,QPalette
+from PyQt5.QtCore import QRegExp,Qt
+from myfuncs import mySum,bitget
 
 
-class MainWindow(QWidget):
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.editor = MainWidget()
+        self.setCentralWidget(self.editor)
+
+        self.setWindowTitle("Monster Calc")
+        self.setGeometry(600, 300, 700, 500)
+
+        # Create Menu
+        menubar = self.menuBar()
+        menubar.setNativeMenuBar(False)
+        self.setStyleSheet("""
+                QMenuBar {
+                    background-color: rgb(49,49,49);
+                    color: rgb(255,255,255);
+                    border: 1px solid #000;
+                }
+
+                QMenuBar::item {
+                    background-color: rgb(49,49,49);
+                    color: rgb(255,255,255);
+                }
+
+                QMenuBar::item::selected {
+                    background-color: rgb(30,30,30);
+                }
+
+                QMenu {
+                    background-color: rgb(49,49,49);
+                    color: rgb(255,255,255);
+                    border: 1px solid #000;
+                }
+
+                QMenu::item::selected {
+                    background-color: rgb(30,30,30);
+                }
+            """)
+        fileMenu = menubar.addMenu('&File')
+        funcMenu = menubar.addMenu('&Functions')
+
+        self.setStyleSheet("background-color: #b8b9ba")
+        self.show()
+
+class MainWidget(QWidget):
     def __init__(self):
         super().__init__()
         # Parameters
@@ -17,16 +62,18 @@ class MainWindow(QWidget):
         # Create Widgets
         self.textEdit = QTextEdit()
         self.resDisp = QTextEdit(readOnly=True)
+        self.titleBar = QLabel()
+        self.titleBar.setText('Monster Calc')
 
         # Syntax Highlighter
         self.highlight = KeywordHighlighter(self.textEdit.document())
 
-        # Text Fields
+        # Create Text Fields of length maxLines
         self.curText = ['']*self.maxLines
         self.resText = ['']*self.maxLines
 
-        # Variables
-        self.symDict =  {   '0e': '0*10**',
+        # Overload symbols
+        self.symDict =  {   '0e': '0*10**', # allow use of 'e' for x10^X notation
                             '1e': '1*10**',
                             '2e': '2*10**',
                             '3e': '3*10**',
@@ -35,17 +82,23 @@ class MainWindow(QWidget):
                             '6e': '6*10**',
                             '7e': '7*10**',
                             '8e': '8*10**',
-                            '9e': '9*10**'
+                            '9e': '9*10**',
+                            'sum': 'mySum'  # replace built-in sum() to take a list of args instead of a py list
                         }
+
+        # Store symDict keys
         self.keyList = [('uu' + str(i)) for i in range(0,self.maxLines)]
         for ii in range(0,self.maxLines):
             self.symDict[self.keyList[ii]] = self.keyList[ii]
+
         self.initUI()
 
     def initUI(self):
-        # Style
+        # Widget Styles
         self.textEdit.setStyleSheet("background-color: #1f3960; color: white; font-size: 20px")
         self.resDisp.setStyleSheet("background-color: #8191aa; font-size: 20px")
+        self.titleBar.setStyleSheet("background-color: #b8b9ba; color: #1f3960; font-size: 30px;")
+        self.titleBar.setAlignment(Qt.AlignCenter)
 
         # Do not allow text wrapping
         self.textEdit.setLineWrapMode(0)
@@ -56,17 +109,16 @@ class MainWindow(QWidget):
         self.textEdit.verticalScrollBar().valueChanged.connect(self.resDisp.verticalScrollBar().setValue)
         self.resDisp.verticalScrollBar().valueChanged.connect(self.textEdit.verticalScrollBar().setValue)
 
-        # Text Changed Callbacks
+        # Text Changed Callback
         self.textEdit.textChanged.connect(self.updateResults)
 
         # Layout
         grid = QGridLayout()
         self.setLayout(grid)
-        grid.addWidget(self.textEdit, 0, 0)
-        grid.addWidget(self.resDisp, 0, 1)
-        self.setGeometry(600, 600, 700, 500)
-        self.setWindowTitle('Main window')
-        self.show()
+        self.titleBar.setFixedHeight(25)
+        grid.addWidget(self.titleBar,0,0,1,2)
+        grid.addWidget(self.textEdit, 1, 0)
+        grid.addWidget(self.resDisp, 1, 1)
 
     def updateResults(self):
         # Get text and break into lines
@@ -107,7 +159,10 @@ class MainWindow(QWidget):
             for key in self.symDict:
                 newExp = newExp.replace(key, self.symDict[key])
             newResult = str(eval(newExp))
-            self.resText[lineNum] = newResult
+            if ('function' not in newResult):
+                self.resText[lineNum] = newResult
+            else:
+                self.resText[lineNum] = ''
         except:
             self.resText[lineNum] = ''
         return
@@ -119,7 +174,7 @@ class KeywordHighlighter (QSyntaxHighlighter):
 
         self.keywords = ['floor', 'ceiling', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
                             'tan','abs','asin', 'acos', 'atan', 'radians', 'degrees','hex',
-                            'bin','dec','min','max','sum']
+                            'bin','dec','min','max','sum','pi','abs','bitget']
         self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x']
 
         self.styles =   {   'keyword': self.styleFormat('yellow', 'bold'),
@@ -180,5 +235,4 @@ class KeywordHighlighter (QSyntaxHighlighter):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MainWindow()
-    ex.setWindowTitle('Monster Calc')
     sys.exit(app.exec_())
