@@ -3,10 +3,10 @@
 
 import sys
 from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,degrees,radians
-from PyQt5.QtWidgets import QTextEdit,QApplication,QGridLayout,QWidget,QLabel,QMainWindow,QAction,QFileDialog,qApp
-from PyQt5.QtGui import QIcon,QColor,QTextCharFormat,QFont,QSyntaxHighlighter,QPalette
+from PyQt5.QtWidgets import QTextEdit,QApplication,QGridLayout,QWidget,QLabel,QMainWindow,QAction,QFileDialog
+from PyQt5.QtGui import QIcon,QColor,QTextCharFormat,QFont,QSyntaxHighlighter
 from PyQt5.QtCore import QRegExp,Qt
-from myfuncs import mySum,bitget
+from myfuncs import mySum,bitget,h2a,a2h
 
 
 class MainWindow(QMainWindow):
@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         self.editor = MainWidget()
         self.setCentralWidget(self.editor)
 
-        self.setWindowTitle("Monster Calc")
+        self.setWindowTitle("MONSTER CALC")
         self.setGeometry(600, 300, 700, 500)
 
         # Create Menu
@@ -95,9 +95,9 @@ class MainWidget(QWidget):
 
     def initUI(self):
         # Widget Styles
-        self.textEdit.setStyleSheet("background-color: #1f3960; color: white; font-size: 20px; border: black")
-        self.resDisp.setStyleSheet("background-color: #8191aa; font-size: 20px; border: black")
-        self.titleBar.setStyleSheet("background-color: rgb(49,49,49); color: #a538d1; font-size: 25px; font: bold")
+        self.textEdit.setStyleSheet("background-color: #233d5b; color: white; font-size: 20px; border: black")
+        self.resDisp.setStyleSheet("background-color: #b3c7dd; font-size: 20px; border: black")
+        self.titleBar.setStyleSheet("background-color: rgb(49,49,49); color: #a538d1; font-size: 22px; font: bold")
 
         # Do not allow text wrapping
         self.textEdit.setLineWrapMode(0)

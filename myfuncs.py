@@ -11,3 +11,10 @@ def bitget(valIn,startBit,stopBit):
         mask += 2**ii
     bitsRtn = (valIn & mask) >> startBit
     return bin(bitsRtn)
+
+def a2h(*args):
+    hexOut = (", ".join("{:02x}".format(arg) for arg in args))
+    return hexOut
+
+def a2h(strIn):
+    return strIn.decode("hex")
