@@ -1,3 +1,4 @@
+from binascii import hexlify,unhexlify
 
 def mySum(*args):
     total = 0
@@ -12,9 +13,8 @@ def bitget(valIn,startBit,stopBit):
     bitsRtn = (valIn & mask) >> startBit
     return bin(bitsRtn)
 
-def a2h(*args):
-    hexOut = (", ".join("{:02x}".format(arg) for arg in args))
-    return hexOut
+def a2h(dataIn):
+    return hexlify(bytes(dataIn,'utf-8'))
 
-def a2h(strIn):
-    return strIn.decode("hex")
+def h2a(dataIn):
+    return unhexlify("{0:0X}".format(dataIn))
