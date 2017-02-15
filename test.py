@@ -1,10 +1,12 @@
-import binascii
+import re
 
-x = 'Paul'
-x = binascii.hexlify(bytes(x,'utf-8'))
-z = 0x5123
-z "{0:01b}".format(int(pnCapt[ii]))
-y = binascii.unhexlify('5123')
+key = 'x'
+newKey = 'y'
+operators = ['+','-','/']
+patStr = key + '(?=[' + ''.join(operators) + '])'  #r'(' + key + ' )|
+replStr = newKey
 
-print(str(x))
-print(y)
+x = re.sub(patStr,replStr, r'x+5')
+print(patStr)
+print(replStr)
+print(x)

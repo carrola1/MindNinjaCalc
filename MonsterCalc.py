@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import sys
+import sys,ctypes
 from PyQt5.QtWidgets import QApplication,QMainWindow
 from PyQt5.QtGui import QIcon
 from calc import MainWidget
@@ -50,11 +50,12 @@ class MainWindow(QMainWindow):
         funcMenu = menubar.addMenu('&Functions')
 
         self.setStyleSheet("background-color: rgb(49,49,49)")
-        #self.show()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MainWindow()
+    myappid = u'mycompany.myproduct.subproduct.version'  # arbitrary string
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     ex.show()
     sys.exit(app.exec_())
 

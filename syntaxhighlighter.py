@@ -3,13 +3,11 @@ from PyQt5.QtCore import QRegExp
 
 class KeywordHighlighter (QSyntaxHighlighter):
 
-    def __init__(self, document):
+    def __init__(self, document,keywords,operators):
         QSyntaxHighlighter.__init__(self, document)
 
-        self.keywords = ['floor', 'ceiling', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
-                            'tan','abs','asin', 'acos', 'atan', 'radians', 'degrees','hex',
-                            'bin','dec','min','max','sum','pi','abs','bitget','a2h','h2a']
-        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x','=']
+        self.keywords = keywords
+        self.operators = operators
 
         self.styles =   {   'keyword': self.styleFormat('#7a9161', 'bold'),
                             'operators': self.styleFormat('#f2aa37'),
@@ -45,7 +43,7 @@ class KeywordHighlighter (QSyntaxHighlighter):
 
     def updateRules(self,symbols):
         newRules = []
-        # Keyword, operator, and brace rules
+        # User symbol rules
         newRules += [(r'\b%s\b' % w, 0, self.styles['symbols'])
                   for w in symbols]
         newRules = [(QRegExp(pat), index, fmt)

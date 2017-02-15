@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QTextEdit,QGridLayout,QWidget,QLabel
 from PyQt5.QtGui import QPixmap
 from syntaxhighlighter import KeywordHighlighter
 from myfuncs import mySum,bitget,h2a,a2h
+import re
 
 class MainWidget(QWidget):
     def __init__(self):
@@ -15,12 +16,16 @@ class MainWidget(QWidget):
         self.resDisp = QTextEdit(readOnly=True)
         self.titleBar = QLabel()
 
-        # Syntax Highlighter
-        self.highlight = KeywordHighlighter(self.textEdit.document())
-
         # Create Text Fields of length maxLines
         self.curText = ['']*self.maxLines
         self.resText = ['']*self.maxLines
+
+        self.keywords = ['floor', 'ceiling', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
+                         'tan', 'abs', 'asin', 'acos', 'atan', 'radians', 'degrees', 'hex',
+                         'bin', 'dec', 'min', 'max', 'sum', 'pi', 'abs', 'bitget', 'a2h', 'h2a']
+        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x', '=']
+        self.operatorRe = '(?=' + '[' + ''.join(self.operators) + '])'.replace('\\','')
+        self.operatorRe = self.operatorRe.replace('\\','\\\\')
 
         # Overload symbols
         self.symDict =  {   '0e': '0*10**', # allow use of 'e' for x10^X notation
@@ -35,6 +40,9 @@ class MainWidget(QWidget):
                             '9e': '9*10**',
                             'sum': 'mySum'  # replace built-in sum() to take a list of args instead of a py list
                         }
+
+        # Syntax Highlighter
+        self.highlight = KeywordHighlighter(self.textEdit.document(),self.keywords,self.operators)
 
         # Store symDict keys
         self.keyList = [('uu' + str(i)) for i in range(0,self.maxLines)]
@@ -74,7 +82,6 @@ class MainWidget(QWidget):
     def updateResults(self):
         # Get text and break into lines
         text = self.textEdit.toPlainText()
-        self.highlight.highlightBlock(text)
         textLines = text.split("\n")
 
         # Find change
@@ -82,6 +89,7 @@ class MainWidget(QWidget):
             if (textLines[ii] != self.curText[ii]):
                 self.curText[ii] = textLines[ii]
             self.evalLine(ii)
+        self.highlight.highlightBlock(text)
         # Clear unused lines
         self.resText[len(textLines):] = ['']*(len(self.resText)-len(textLines))
 
@@ -96,11 +104,12 @@ class MainWidget(QWidget):
         if ('=' in newLine):
             newLine = newLine.split('=')
             newVar = newLine[0].strip()
-            self.evalExp(newLine[1],lineNum)
-            self.symDict[newVar] = self.symDict.pop(self.keyList[lineNum])
-            self.symDict[newVar] = self.resText[lineNum]
-            self.keyList[lineNum] = newVar
-            self.highlight.updateRules(self.keyList)
+            if (newVar != '') & (' ' not in newVar):
+                self.evalExp(newLine[1],lineNum)
+                self.symDict[newVar] = self.symDict.pop(self.keyList[lineNum])
+                self.symDict[newVar] = self.resText[lineNum]
+                self.keyList[lineNum] = newVar
+                self.highlight.updateRules(self.keyList)
         else:
             self.evalExp(newLine, lineNum)
         return
@@ -108,7 +117,7 @@ class MainWidget(QWidget):
     def evalExp(self,newExp,lineNum):
         try:
             for key in self.symDict:
-                newExp = newExp.replace(key, self.symDict[key])
+                newExp = re.sub(key + self.operatorRe,self.symDict[key],newExp)
             newResult = str(eval(newExp))
             if ('function' not in newResult):
                 self.resText[lineNum] = newResult
