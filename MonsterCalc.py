@@ -54,8 +54,9 @@ class MainWindow(QMainWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = MainWindow()
-    myappid = u'mycompany.myproduct.subproduct.version'  # arbitrary string
-    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    if ('win32' in sys.platform):
+        myappid = u'mycompany.myproduct.subproduct.version'  # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     ex.show()
     sys.exit(app.exec_())
 
