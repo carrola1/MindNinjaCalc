@@ -24,7 +24,7 @@ class MainWidget(QWidget):
                          'tan', 'abs', 'asin', 'acos', 'atan', 'radians', 'degrees', 'hex',
                          'bin', 'dec', 'min', 'max', 'sum', 'pi', 'abs', 'bitget', 'a2h', 'h2a']
         self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '0b', '0x', '=']
-        self.operatorRe = '(?=' + '[' + ''.join(self.operators) + '])'.replace('\\','')
+        self.operatorRe = '(?=' + '[' + ''.join(self.operators) + ']| |)'
         self.operatorRe = self.operatorRe.replace('\\','\\\\')
 
         # Overload symbols
