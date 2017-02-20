@@ -24,33 +24,24 @@ class MainWidget(QWidget):
         self.curText = ['']*self.maxLines
         self.resText = ['']*self.maxLines
 
-        self.keywords = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
+        self.funcs = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
                          'tan', 'abs', 'asin', 'acos', 'atan', 'rad', 'deg', 'hex',
-                         'bin', 'dec', 'min', 'max', 'sum', 'pi', 'bitget', 'ans',
-                         'a2h', 'h2a','0x','0b']
-        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=','%','0x','0b']
-
-        # Overload symbols
-        self.symDict =  {   '0e': '0*10**', # allow use of 'e' for x10^X notation
-                            '1e': '1*10**',
-                            '2e': '2*10**',
-                            '3e': '3*10**',
-                            '4e': '4*10**',
-                            '5e': '5*10**',
-                            '6e': '6*10**',
-                            '7e': '7*10**',
-                            '8e': '8*10**',
-                            '9e': '9*10**',
-                            'sum': 'mySum'   # replace built-in sum() to take a list of args instead of a py list
-                        }
+                         'bin', 'dec', 'min', 'max', 'sum', 'bitget',
+                         'a2h', 'h2a']
+        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=','%']
+        self.prefix = ['0x','0b']
+        self.suffix = ['p','n','u','m','k','M','e']
+        self.symbols = ['ans','pi']
 
         # Syntax Highlighter
-        self.highlight = KeywordHighlighter(self.textEdit.document(),self.keywords,self.operators)
+        self.highlight = KeywordHighlighter(self.textEdit.document(),self.funcs,self.operators,
+                                            self.symbols,self.suffix,self.prefix)
 
-        # Store symDict keys
-        self.keyList = [('uu' + str(i)) for i in range(0,self.maxLines)]
-        for ii in range(0,self.maxLines):
-            self.symDict[self.keyList[ii]] = self.keyList[ii]
+        self.userSyms = {}
+        self.symKeys = []
+        self.clear()
+
+        self.sigFigs = 4
 
         self.initUI()
 
@@ -166,26 +157,35 @@ class MainWidget(QWidget):
             newVar = newLine[0].strip()
             if (newVar != '') & (' ' not in newVar):
                 self.evalExp(newLine[1],lineNum)
-                self.symDict[newVar] = self.symDict.pop(self.keyList[lineNum])
-                self.symDict[newVar] = self.resText[lineNum]
-                self.keyList[lineNum] = newVar
-                self.highlight.updateRules(self.keyList)
+                self.userSyms[newVar] = self.userSyms.pop(self.symKeys[lineNum])
+                self.userSyms[newVar] = self.resText[lineNum]
+                self.symKeys[lineNum] = newVar
+                self.highlight.updateRules(self.symKeys)
         else:
             self.evalExp(newLine, lineNum)
         return
 
     def evalExp(self,newExp,lineNum):
         try:
-            for key in self.symDict:
+            for key in self.userSyms:
                 if (lineNum > 0):
-                    self.symDict['ans'] = self.resText[lineNum-1]
+                    self.userSyms['ans'] = self.resText[lineNum-1]
                 else:
-                    self.symDict['ans'] = 'None'
-                newExp = re.sub(r'\b'+key+r'\b',self.symDict[key],newExp)
+                    self.userSyms['ans'] = 'None'
+                newExp = re.sub(r'\b'+key+r'\b',self.userSyms[key],newExp)
+
+            # scientific notations
+            newExp = re.sub('(\d)(p)', '(\g<1>*10**-12)',newExp)
+            newExp = re.sub('(\d)(n)', '(\g<1>*10**-9)', newExp)
+            newExp = re.sub('(\d)(u)', '(\g<1>*10**-6)', newExp)
+            newExp = re.sub('(\d)(m)', '(\g<1>*10**-3)', newExp)
+            newExp = re.sub('(\d)(k)', '(\g<1>*10**3)', newExp)
+            newExp = re.sub('(\d)(M)', '(\g<1>*10**6)', newExp)
+
             newResult = eval(newExp)
             try:
                 if (newResult % 1 != 0):
-                    newResult = '{0:.{digits}g}'.format(newResult, digits=4)
+                    newResult = '{0:.{digits}g}'.format(newResult, digits=self.sigFigs)
             except:
                 pass
             newResult = str(newResult)
@@ -204,4 +204,25 @@ class MainWidget(QWidget):
         funcFullText = trigFunc.text()
         funcText = funcFullText.split(':')[0] + '('
         self.textEdit.insertPlainText(funcText)
+        return
+
+    def clear(self):
+        self.textEdit.setPlainText('')
+        # Overload symbols
+        self.userSyms = {
+                        'sum':  'mySum'  # replace built-in sum() to take a list of args instead of a py list
+                        }
+        # Store userSyms keys
+        self.symKeys = [('uu' + str(i)) for i in range(0, self.maxLines)]
+        for ii in range(0, self.maxLines):
+            self.userSyms[self.symKeys[ii]] = self.symKeys[ii]
+        self.highlight.updateRules(self.symKeys)
+        return
+
+    def setSigFigs(self,digits):
+        try:
+            self.sigFigs = digits
+            self.updateResults()
+        except:
+            pass
         return

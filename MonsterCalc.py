@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys,ctypes
-from PyQt5.QtWidgets import QApplication,QMainWindow
+from PyQt5.QtWidgets import QApplication,QMainWindow,QAction,QFileDialog,QInputDialog
 from PyQt5.QtGui import QIcon
 from calc import MainWidget
 
@@ -17,10 +17,17 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('MONSTER CALC')
         self.setWindowIcon(QIcon('Monster.png'))
 
+        self.saveName = ''
+
         # Create Menu
         menubar = self.menuBar()
         menubar.setNativeMenuBar(False)
         self.setStyleSheet("""
+
+                        QMainWindow {
+                            background-color: rgb(49,49,49);
+                        }
+
                         QMenuBar {
                             background-color: rgb(49,49,49);
                             color: rgb(255,255,255);
@@ -38,7 +45,7 @@ class MainWindow(QMainWindow):
 
                         QMenu {
                             background-color: rgb(49,49,49);
-                            color: rgb(255,255,255);
+                            color: white;
                             border: 1px solid #000;
                         }
 
@@ -46,10 +53,93 @@ class MainWindow(QMainWindow):
                             background-color: rgb(30,30,30);
                         }
                     """)
+
         fileMenu = menubar.addMenu('&File')
         editMenu = menubar.addMenu('&Edit')
+        settingsMenu = menubar.addMenu('&Settings')
 
-        self.setStyleSheet("background-color: rgb(49,49,49)")
+        openAction = QAction('Open', self)
+        openAction.setShortcut('Ctrl+O')
+        openAction.triggered.connect(self.openDialog)
+        fileMenu.addAction(openAction)
+
+        saveAction = QAction('Save', self)
+        saveAction.setShortcut('Ctrl+S')
+        saveAction.triggered.connect(self.checkSave)
+        fileMenu.addAction(saveAction)
+
+        saveAsAction = QAction('Save As..', self)
+        saveAsAction.triggered.connect(self.saveDialog)
+        fileMenu.addAction(saveAsAction)
+
+        exitAction = QAction('Exit', self)
+        exitAction.setShortcut('Ctrl+Q')
+        exitAction.triggered.connect(self.close)
+        fileMenu.addAction(exitAction)
+
+        copyAction = QAction('Copy', self)
+        copyAction.setShortcut('Ctrl+C')
+        copyAction.triggered.connect(self.editor.textEdit.copy)
+        editMenu.addAction(copyAction)
+
+        pasteAction = QAction('Paste', self)
+        pasteAction.setShortcut('Ctrl+V')
+        pasteAction.triggered.connect(self.editor.textEdit.paste)
+        editMenu.addAction(pasteAction)
+
+        clearAction = QAction('Clear all', self)
+        clearAction.setShortcut('Ctrl+Shift+C')
+        clearAction.triggered.connect(self.clearAll)
+        editMenu.addAction(clearAction)
+
+        sigFigAction = QAction('Significant Figures..', self)
+        sigFigAction.triggered.connect(self.setSigFigs)
+        settingsMenu.addAction(sigFigAction)
+
+    def openDialog(self):
+        try:
+            fname = QFileDialog.getOpenFileName(self, 'Open file', '/home','Text files (*.txt)')
+            f = open(fname[0],'r')
+            with f:
+                self.editor.textEdit.setPlainText(f.read())
+            self.saveName = fname[0]
+        except:
+            pass
+        return
+
+    def saveDialog(self):
+        try:
+            fname = QFileDialog.getSaveFileName(self,'Save file', '/home',"Text files (*.txt)")
+            f = open(fname[0],'w')
+            with f:
+                f.write(self.editor.textEdit.toPlainText())
+            self.saveName = fname[0]
+        except:
+            pass
+        return
+
+    def checkSave(self):
+        if (self.saveName == ''):
+            self.saveDialog()
+        else:
+            try:
+                f = open(self.saveName, 'w')
+                with f:
+                    f.write(self.editor.textEdit.toPlainText())
+            except:
+                pass
+        return
+
+    def clearAll(self):
+        self.editor.clear()
+        return
+
+    def setSigFigs(self):
+        text, ok = QInputDialog.getText(self, 'Significant Figures',
+                                        'Set # of significant figures to display:')
+        if ok:
+            self.editor.setSigFigs(int(text))
+        return
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

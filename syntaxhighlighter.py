@@ -3,22 +3,32 @@ from PyQt5.QtCore import QRegExp
 
 class KeywordHighlighter (QSyntaxHighlighter):
 
-    def __init__(self, document,keywords,operators):
+    def __init__(self, document,funcs,operators,syms,suffix,prefix):
         QSyntaxHighlighter.__init__(self, document)
 
-        self.keywords = keywords
+        self.funcs = funcs
         self.operators = operators
+        self.syms = syms
+        self.suffix = suffix
+        self.prefix = prefix
 
-        self.styles =   {   'keyword': self.styleFormat('#7a9161', 'bold'),
+        self.styles =   {   'funcs': self.styleFormat('#7a9161', 'bold'),
                             'operators': self.styleFormat('#f2aa37'),
-                            'symbols': self.styleFormat('#b077d6', 'bold')}
+                            'userSyms': self.styleFormat('#b077d6', 'bold'),
+                            'symbols': self.styleFormat('#d15152','bold')}
 
         rules = []
         # Keyword, operator, and brace rules
-        rules += [(r'\b%s\b' % w, 0, self.styles['keyword'])
-            for w in self.keywords]
+        rules += [(r'\b%s\b' % w, 0, self.styles['funcs'])
+            for w in self.funcs]
         rules += [(r'%s' % o, 0, self.styles['operators'])
             for o in self.operators]
+        rules += [(r'\b%s\b' % x, 0, self.styles['symbols'])
+                  for x in self.syms]
+        rules += [(r'(\d)(%s)' % s, 2, self.styles['symbols'])
+                  for s in self.suffix]
+        rules += [(r'\b%s' % p, 0, self.styles['symbols'])
+                  for p in self.prefix]
 
         # Build a QRegExp for each pattern
         self.intRules = [(QRegExp(pat), index, fmt)
@@ -41,11 +51,11 @@ class KeywordHighlighter (QSyntaxHighlighter):
 
         return _format
 
-    def updateRules(self,symbols):
+    def updateRules(self,userSyms):
         newRules = []
         # User symbol rules
-        newRules += [(r'\b%s\b' % w, 0, self.styles['symbols'])
-                  for w in symbols]
+        newRules += [(r'\b%s\b' % w, 0, self.styles['userSyms'])
+                  for w in userSyms]
         newRules = [(QRegExp(pat), index, fmt)
                     for (pat, index, fmt) in newRules]
         self.rules = self.intRules + newRules
