@@ -54,10 +54,12 @@ class MainWindow(QMainWindow):
                         }
                     """)
 
+        # Create menu categories
         fileMenu = menubar.addMenu('&File')
         editMenu = menubar.addMenu('&Edit')
         settingsMenu = menubar.addMenu('&Settings')
 
+        # File menu
         openAction = QAction('Open', self)
         openAction.setShortcut('Ctrl+O')
         openAction.triggered.connect(self.openDialog)
@@ -77,6 +79,7 @@ class MainWindow(QMainWindow):
         exitAction.triggered.connect(self.close)
         fileMenu.addAction(exitAction)
 
+        # Edit menu
         copyAction = QAction('Copy', self)
         copyAction.setShortcut('Ctrl+C')
         copyAction.triggered.connect(self.editor.textEdit.copy)
@@ -92,6 +95,7 @@ class MainWindow(QMainWindow):
         clearAction.triggered.connect(self.clearAll)
         editMenu.addAction(clearAction)
 
+        # Settings menu
         sigFigAction = QAction('Significant Figures..', self)
         sigFigAction.triggered.connect(self.setSigFigs)
         settingsMenu.addAction(sigFigAction)
@@ -148,5 +152,6 @@ if __name__ == '__main__':
         myappid = u'mycompany.myproduct.subproduct.version'  # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     ex.show()
+    ex.editor.textEdit.setFocus()
     sys.exit(app.exec_())
 

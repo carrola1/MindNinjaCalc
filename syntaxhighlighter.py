@@ -3,7 +3,7 @@ from PyQt5.QtCore import QRegExp
 
 class KeywordHighlighter (QSyntaxHighlighter):
 
-    def __init__(self, document,funcs,operators,syms,suffix,prefix):
+    def __init__(self, document,funcs,operators,syms,suffix,prefix,tweener,units):
         QSyntaxHighlighter.__init__(self, document)
 
         self.funcs = funcs
@@ -11,6 +11,8 @@ class KeywordHighlighter (QSyntaxHighlighter):
         self.syms = syms
         self.suffix = suffix
         self.prefix = prefix
+        self.units = units
+        self.tweener = tweener
 
         self.styles =   {   'funcs': self.styleFormat('#7a9161', 'bold'),
                             'operators': self.styleFormat('#f2aa37'),
@@ -25,10 +27,14 @@ class KeywordHighlighter (QSyntaxHighlighter):
             for o in self.operators]
         rules += [(r'\b%s\b' % x, 0, self.styles['symbols'])
                   for x in self.syms]
-        rules += [(r'(\d)(%s)' % s, 2, self.styles['symbols'])
+        rules += [(r'(\d)(%s\b)' % s, 2, self.styles['symbols'])
                   for s in self.suffix]
         rules += [(r'\b%s' % p, 0, self.styles['symbols'])
                   for p in self.prefix]
+        rules += [(r'(\d)(%s)' % t, 2, self.styles['symbols'])
+                  for t in self.tweener]
+        rules += [(r'\b%s\b' % u, 0, self.styles['symbols'])
+                  for u in self.units]
 
         # Build a QRegExp for each pattern
         self.intRules = [(QRegExp(pat), index, fmt)
