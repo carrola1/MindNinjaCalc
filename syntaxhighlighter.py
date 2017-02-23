@@ -17,7 +17,7 @@ class KeywordHighlighter (QSyntaxHighlighter):
         self.styles =   {   'funcs': self.styleFormat('#7a9161', 'bold'),
                             'operators': self.styleFormat('#f2aa37'),
                             'userSyms': self.styleFormat('#b077d6', 'bold'),
-                            'symbols': self.styleFormat('#d15152','bold')}
+                            'symbols': self.styleFormat('#d15152')}
 
         rules = []
         # Keyword, operator, and brace rules

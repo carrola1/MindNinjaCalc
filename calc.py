@@ -26,10 +26,11 @@ class MainWidget(QWidget):
         self.curText = ['']*self.maxLines
         self.resText = ['']*self.maxLines
 
+        # Supported functions and symbols
         self.funcs = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
                         'tan', 'abs', 'asin', 'acos', 'atan', 'rad', 'deg', 'hex',
                         'bin', 'dec', 'min', 'max', 'sum', 'bitget', 'a2h', 'h2a']
-        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=','%']
+        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=','%','|']
         self.prefix = ['0x','0b']
         self.suffix = ['p','n','u','m','k','M']
         self.tweener = ['e']
@@ -54,26 +55,33 @@ class MainWidget(QWidget):
         unitsForce = {'N': '1', 'kN': '1000', 'lbf': '4.44822'}
         forceKeys = ['N', 'kN', 'lbf']
 
+        # Temp Units (C to F handled diferently since transform is not proportional)
+        tempKeys = ['C', 'F']
+
         self.units = [unitsLen,unitsVol,unitsMass,unitsForce]
-        self.unitKeys = lenKeys + volKeys + massKeys + forceKeys
+        self.unitKeys = lenKeys + volKeys + massKeys + forceKeys + tempKeys
 
         # Syntax Highlighter
         self.highlight = KeywordHighlighter(self.textEdit.document(),self.funcs,self.operators,
                                             self.symbols,self.suffix,self.prefix,self.tweener,
                                             self.unitKeys)
 
+        # Parameters for user-defined symbols
         self.userSyms = {}
         self.symKeys = []
         self.clear()
 
+        # Default # sig figs to display
         self.sigFigs = 5
 
         self.initUI()
 
     def initUI(self):
         # Widget Styles
-        self.textEdit.setStyleSheet("background-color: #232323; color: white; font-size: 20px; border: black")
-        self.resDisp.setStyleSheet("background-color: #a0a0a0; font-size: 20px; border: black")
+        self.textEdit.setStyleSheet("background-color: #232323; color: white; font-size: 20px; border: black;"
+                                    "selection-color: #232323; selection-background-color: #c0c0c0")
+        self.resDisp.setStyleSheet("background-color: #a0a0a0; font-size: 20px; border: black;"
+                                   "selection-color: white; selection-background-color: #232323")
         self.titleBar.setStyleSheet("background-color: rgb(49,49,49)")
         self.splitEdit.setHandleWidth(2)
         self.splitEdit.setStyleSheet("color: black; background-color: black")
@@ -145,7 +153,7 @@ class MainWidget(QWidget):
             self.funcTool.addAction(action)
         self.funcTool.setPopupMode(2)
 
-        # Callbacks
+        # Text changed callback
         self.textEdit.textChanged.connect(self.updateResults)
 
         # Layout
@@ -158,14 +166,13 @@ class MainWidget(QWidget):
         grid.addWidget(self.titleBar,0,0)
         grid.addWidget(self.funcTool,0,1,Qt.AlignRight)
         grid.addWidget(self.splitEdit,1,0,1,2)
-        #grid.addWidget(self.resDisp, 1, 1)
 
     def updateResults(self):
         # Get text and break into lines
         text = self.textEdit.toPlainText()
         textLines = text.split("\n")
 
-        # Find change
+        # Find changes and evaluate each line
         for ii in range(0,len(textLines)):
             if (textLines[ii] != self.curText[ii]):
                 self.curText[ii] = textLines[ii]
@@ -174,7 +181,7 @@ class MainWidget(QWidget):
         # Clear unused lines
         self.resText[len(textLines):] = ['']*(len(self.resText)-len(textLines))
 
-        # Update results
+        # Update displayed results
         newResults = "\n"
         newResults = newResults.join(self.resText[0:len(textLines)])
         self.resDisp.setPlainText(newResults)
@@ -202,6 +209,8 @@ class MainWidget(QWidget):
 
     def evalExp(self,newExp,lineNum):
         try:
+            # Find and replace user-defined symbols with values
+            # Also recognizes 'ans' and replaced with result from previous line
             for key in self.userSyms:
                 if (lineNum > 0):
                     self.userSyms['ans'] = self.resText[lineNum-1]
@@ -210,15 +219,16 @@ class MainWidget(QWidget):
                 newExp = re.sub(r'\b'+key+r'\b',self.userSyms[key],newExp)
 
             # scientific notations
-            newExp = re.sub(r'(\d*[.,]?\d*)(p\b)', r'(\g<1>*10**-12)',newExp)
-            newExp = re.sub(r'(\d*[.,]?\d*)(n\b)', r'(\g<1>*10**-9)', newExp)
-            newExp = re.sub(r'(\d*[.,]?\d*)(u\b)', r'(\g<1>*10**-6)', newExp)
-            newExp = re.sub(r'(\d*[.,]?\d*)(m\b)', r'(\g<1>*10**-3)', newExp)
-            newExp = re.sub(r'(\d*[.,]?\d*)(k\b)', r'(\g<1>*10**3)', newExp)
-            newExp = re.sub(r'(\d*[.,]?\d*)(M\b)', r'(\g<1>*10**6)', newExp)
+            newExp = re.sub(r'(\d+[.,]?\d*)(p\b)', r'(\g<1>*10**-12)',newExp)
+            newExp = re.sub(r'(\d+[.,]?\d*)(n\b)', r'(\g<1>*10**-9)', newExp)
+            newExp = re.sub(r'(\d+[.,]?\d*)(u\b)', r'(\g<1>*10**-6)', newExp)
+            newExp = re.sub(r'(\d+[.,]?\d*)(m\b)', r'(\g<1>*10**-3)', newExp)
+            newExp = re.sub(r'(\d+[.,]?\d*)(k\b)', r'(\g<1>*10**3)', newExp)
+            newExp = re.sub(r'(\d+[.,]?\d*)(M\b)', r'(\g<1>*10**6)', newExp)
 
             newResult = eval(newExp)
             try:
+                # Apply sig figs
                 if (newResult % 1 != 0):
                     newResult = '{0:.{digits}g}'.format(newResult, digits=self.sigFigs)
             except:
@@ -239,16 +249,28 @@ class MainWidget(QWidget):
         convFrom = newLine[0]
         convTo = newLine[1]
         try:
-            for unitType in self.units:
-                for unit in unitType:
-                    convFrom = re.sub(r'\b' + unit + r'\b', '*' + unitType[unit], convFrom)
-                    convTo = re.sub(r'\b' + unit + r'\b', '/' + unitType[unit], convTo)
-                if (convFrom != newLine[0]) & (convTo != newLine[1]):
-                    newLine = convFrom + convTo
-                    return newLine
-                else:
-                    convFrom = newLine[0]
-                    convTo = newLine[1]
+            # Special case for 'C to F' and 'F to C'
+            if ((' C ' in convFrom) & (' F' in convTo)):
+                convFrom = re.sub(r'\b' + 'C' + r'\b', '*1.8+32', convFrom)
+                convTo = re.sub(r'\b' + 'F' + r'\b', '', convTo)
+                newLine = convFrom + convTo
+                return newLine
+            elif ((' F ' in convFrom) & (' C' in convTo)):
+                convFrom = re.sub(r'\b' + 'F' + r'\b', '/1.8-17.778', convFrom)
+                convTo = re.sub(r'\b' + 'C' + r'\b', '', convTo)
+                newLine = convFrom + convTo
+                return newLine
+            else:
+                for unitType in self.units:
+                    for unit in unitType:
+                        convFrom = re.sub(r'\b' + unit + r'\b', '*' + unitType[unit], convFrom)
+                        convTo = re.sub(r'\b' + unit + r'\b', '/' + unitType[unit], convTo)
+                    if (convFrom != newLine[0]) & (convTo != newLine[1]):
+                        newLine = convFrom + convTo
+                        return newLine
+                    else:
+                        convFrom = newLine[0]
+                        convTo = newLine[1]
         except:
             pass
         return newLine

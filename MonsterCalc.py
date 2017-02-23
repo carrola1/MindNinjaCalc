@@ -85,6 +85,11 @@ class MainWindow(QMainWindow):
         copyAction.triggered.connect(self.editor.textEdit.copy)
         editMenu.addAction(copyAction)
 
+        cutAction = QAction('Cut', self)
+        cutAction.setShortcut('Ctrl+X')
+        cutAction.triggered.connect(self.editor.textEdit.cut)
+        editMenu.addAction(cutAction)
+
         pasteAction = QAction('Paste', self)
         pasteAction.setShortcut('Ctrl+V')
         pasteAction.triggered.connect(self.editor.textEdit.paste)
