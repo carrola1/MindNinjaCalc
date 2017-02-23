@@ -22,7 +22,7 @@ class MainWidget(QWidget):
         self.funcTool = QToolButton()
         self.splitEdit = QSplitter()
 
-        # Create Text Fields of length maxLines
+        # Create text fields of length maxLines
         self.curText = ['']*self.maxLines
         self.resText = ['']*self.maxLines
 
