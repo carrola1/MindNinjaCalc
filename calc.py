@@ -1,3 +1,4 @@
+import sys,ctypes
 from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,exp
 from math import radians as rad
 from math import degrees as deg
@@ -85,10 +86,16 @@ class MainWidget(QWidget):
         self.titleBar.setStyleSheet("background-color: rgb(49,49,49)")
         self.splitEdit.setHandleWidth(2)
         self.splitEdit.setStyleSheet("color: black; background-color: black")
-        monsterImage = QPixmap("C:\GitHub\MonsterCalc\MonsterCalc.png")
+        if ('win32' in sys.platform):
+            monsterImage = QPixmap("C:\GitHub\MonsterCalc\MonsterCalc.png")
+        else:
+            monsterImage = QPixmap("/Users/Andrew/Documents/Python/MonsterCalc/MonsterCalc.png")
         self.titleBar.setPixmap(monsterImage)
         funcIcon = QIcon()
-        functionImage = QPixmap("C:\GitHub\MonsterCalc\Functions.png")
+        if ('win32' in sys.platform):
+            functionImage = QPixmap("C:\GitHub\MonsterCalc\Functions.png")
+        else:
+            functionImage = QPixmap("/Users/Andrew/Documents/Python/MonsterCalc/Functions.png")
         funcIcon.addPixmap(functionImage)
         self.funcTool.setIcon(funcIcon)
         self.setStyleSheet(
