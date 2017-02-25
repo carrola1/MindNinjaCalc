@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("MONSTER CALC")
         self.setGeometry(600, 300, 700, 500)
         self.setWindowTitle('MONSTER CALC')
-        self.setWindowIcon(QIcon('Monster.png'))
+        self.setWindowIcon(QIcon('C:\GitHub\MonsterCalc\Monster.png'))
 
         self.saveName = ''
 

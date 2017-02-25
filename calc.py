@@ -1,4 +1,4 @@
-from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan
+from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,exp
 from math import radians as rad
 from math import degrees as deg
 from PyQt5.QtWidgets import QTextEdit,QGridLayout,QWidget,QLabel,QToolButton,QAction,QSplitter
@@ -27,10 +27,10 @@ class MainWidget(QWidget):
         self.resText = ['']*self.maxLines
 
         # Supported functions and symbols
-        self.funcs = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'sin', 'cos',
+        self.funcs = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'exp', 'sin', 'cos',
                         'tan', 'abs', 'asin', 'acos', 'atan', 'rad', 'deg', 'hex',
                         'bin', 'dec', 'min', 'max', 'sum', 'bitget', 'a2h', 'h2a']
-        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=','%','|']
+        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=','%','\|']
         self.prefix = ['0x','0b']
         self.suffix = ['p','n','u','m','k','M']
         self.tweener = ['e']
@@ -85,10 +85,10 @@ class MainWidget(QWidget):
         self.titleBar.setStyleSheet("background-color: rgb(49,49,49)")
         self.splitEdit.setHandleWidth(2)
         self.splitEdit.setStyleSheet("color: black; background-color: black")
-        monsterImage = QPixmap("MonsterCalc.png")
+        monsterImage = QPixmap("C:\GitHub\MonsterCalc\MonsterCalc.png")
         self.titleBar.setPixmap(monsterImage)
         funcIcon = QIcon()
-        functionImage = QPixmap("Functions.png")
+        functionImage = QPixmap("C:\GitHub\MonsterCalc\Functions.png")
         funcIcon.addPixmap(functionImage)
         self.funcTool.setIcon(funcIcon)
         self.setStyleSheet(
@@ -126,28 +126,29 @@ class MainWidget(QWidget):
         func3  = QAction('log:    Log base e', self.funcTool)
         func4  = QAction('log10:  Log base 10', self.funcTool)
         func5  = QAction('log2:   Log base 2', self.funcTool)
-        func6  = QAction('sin:    Sine', self.funcTool)
-        func7  = QAction('cos:    Cosine', self.funcTool)
-        func8  = QAction('tan:    Tangent', self.funcTool)
-        func9  = QAction('asin:   Arc-Sine', self.funcTool)
-        func10 = QAction('acos:   Arc-Cosine', self.funcTool)
-        func11 = QAction('atan:   Arc-Tangent', self.funcTool)
-        func12 = QAction('abs:    Absolute value', self.funcTool)
-        func13 = QAction('rad:    Convert deg to rad', self.funcTool)
-        func14 = QAction('deg:    Convert rad to deg', self.funcTool)
-        func15 = QAction('hex:    Convert to hex', self.funcTool)
-        func16 = QAction('bin:    Convert to bin', self.funcTool)
-        func17 = QAction('dec:    Convert to dec', self.funcTool)
-        func18 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
-        func19 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
-        func20 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
-        func21 = QAction('min:    Return list min', self.funcTool)
-        func22 = QAction('max:    Return list max', self.funcTool)
-        func23 = QAction('sum:    Return list sum', self.funcTool)
+        func6  = QAction('exp:    Exponential (e**x)', self.funcTool)
+        func7  = QAction('sin:    Sine', self.funcTool)
+        func8  = QAction('cos:    Cosine', self.funcTool)
+        func9  = QAction('tan:    Tangent', self.funcTool)
+        func10  = QAction('asin:   Arc-Sine', self.funcTool)
+        func11 = QAction('acos:   Arc-Cosine', self.funcTool)
+        func12 = QAction('atan:   Arc-Tangent', self.funcTool)
+        func13 = QAction('abs:    Absolute value', self.funcTool)
+        func14 = QAction('rad:    Convert deg to rad', self.funcTool)
+        func15 = QAction('deg:    Convert rad to deg', self.funcTool)
+        func16 = QAction('hex:    Convert to hex', self.funcTool)
+        func17 = QAction('bin:    Convert to bin', self.funcTool)
+        func18 = QAction('dec:    Convert to dec', self.funcTool)
+        func19 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
+        func20 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
+        func21 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
+        func22 = QAction('min:    Return list min', self.funcTool)
+        func23 = QAction('max:    Return list max', self.funcTool)
+        func24 = QAction('sum:    Return list sum', self.funcTool)
 
         funcs = [func0,func1,func2,func3,func4,func5,func6,func7,func8,func9,func10,func11,
                  func12,func13,func14,func15,func16,func17,func18,func19,func20,func21,func22,
-                 func23]
+                 func23,func24]
         for action in funcs:
             action.triggered.connect(self.funcTriggered)
             self.funcTool.addAction(action)

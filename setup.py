@@ -3,8 +3,7 @@
 from cx_Freeze import setup, Executable
 import os
 
-includes_f = ['MonsterCalc.py','calc.py','syntaxhighlighter.py','myfuncs.py','MonsterCalc.png','Monster.png',
-              r"C:\Users\acarro12\AppData\Local\Continuum\Anaconda3\pkgs\qt-5.6.2-vc14_0\Library\bin\libEGL.dll"]
+includes_f = ['MonsterCalc.py','calc.py','syntaxhighlighter.py','myfuncs.py','MonsterCalc.png','Monster.png','Functions.png']
 include_packs = ['sys','PyQt5','binascii','calc','syntaxhighlighter','myfuncs']
 exclude_packs = ['matplotlib','numpy','pandas','scipy','statsmodels','notebook','lxml']
 
