@@ -3,7 +3,7 @@ from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,ex
 from math import radians as rad
 from math import degrees as deg
 from PyQt5.QtWidgets import QTextEdit,QGridLayout,QWidget,QLabel,QToolButton,QAction,QSplitter
-from PyQt5.QtGui import QPixmap,QIcon
+from PyQt5.QtGui import QPixmap,QIcon,QFont
 from PyQt5.QtCore import QSize,Qt
 from syntaxhighlighter import KeywordHighlighter
 from myfuncs import bitget,h2a,a2h
@@ -21,6 +21,7 @@ class MainWidget(QWidget):
         self.resDisp = QTextEdit(readOnly=True)
         self.titleBar = QLabel()
         self.funcTool = QToolButton()
+        self.symTool = QToolButton()
         self.splitEdit = QSplitter()
 
         # Create text fields of length maxLines
@@ -46,7 +47,7 @@ class MainWidget(QWidget):
         unitsVol = {'ml': '1', 'mL': '1', 'l': '1000', 'L': '1000', 'c': '236.588',
                          'pt': '473.176', 'qt': '946.353', 'gal': '3785.41', 'oz': '29.5735',
                          'tsp': '4.92892', 'tbl': '14.7868'}
-        volKeys = ['ml', 'mL', 'l', 'L', 'c', 'pt', 'qt', 'gal', 'fl', 'tsp', 'tbl']
+        volKeys = ['ml', 'mL', 'l', 'L', 'c', 'pt', 'qt', 'gal', 'oz', 'tsp', 'tbl']
 
         # Mass Units (refereced to g)
         unitsMass = {'mg': '.001', 'g': '1', 'kg': '1000', 'lbs': '453.592', 'oz': '28.3495'}
@@ -107,7 +108,6 @@ class MainWidget(QWidget):
                 QMenu {
                     background-color: #232323;
                     color: #a0a0a0;
-                    font: bold;
                     font-family: "Lucida Console";
                     border: 1px solid #000;
                 }
@@ -127,39 +127,108 @@ class MainWidget(QWidget):
         self.resDisp.verticalScrollBar().valueChanged.connect(self.textEdit.verticalScrollBar().setValue)
 
         # Function Tool Button
+        funcT0 = QAction('MATH',self.funcTool)
         func0  = QAction('floor:  Round down',self.funcTool)
         func1  = QAction('ceil:   Round up',self.funcTool)
-        func2  = QAction('sqrt:   Square root', self.funcTool)
-        func3  = QAction('log:    Log base e', self.funcTool)
-        func4  = QAction('log10:  Log base 10', self.funcTool)
-        func5  = QAction('log2:   Log base 2', self.funcTool)
-        func6  = QAction('exp:    Exponential (e**x)', self.funcTool)
-        func7  = QAction('sin:    Sine', self.funcTool)
-        func8  = QAction('cos:    Cosine', self.funcTool)
-        func9  = QAction('tan:    Tangent', self.funcTool)
-        func10  = QAction('asin:   Arc-Sine', self.funcTool)
-        func11 = QAction('acos:   Arc-Cosine', self.funcTool)
-        func12 = QAction('atan:   Arc-Tangent', self.funcTool)
-        func13 = QAction('abs:    Absolute value', self.funcTool)
-        func14 = QAction('rad:    Convert deg to rad', self.funcTool)
-        func15 = QAction('deg:    Convert rad to deg', self.funcTool)
-        func16 = QAction('hex:    Convert to hex', self.funcTool)
-        func17 = QAction('bin:    Convert to bin', self.funcTool)
-        func18 = QAction('dec:    Convert to dec', self.funcTool)
-        func19 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
-        func20 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
-        func21 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
-        func22 = QAction('min:    Return list min', self.funcTool)
-        func23 = QAction('max:    Return list max', self.funcTool)
-        func24 = QAction('sum:    Return list sum', self.funcTool)
+        func2  = QAction('min:    Return list min', self.funcTool)
+        func3  = QAction('max:    Return list max', self.funcTool)
+        func4  = QAction('sum:    Return list sum', self.funcTool)
+        func5  = QAction('sqrt:   Square root', self.funcTool)
+        func6  = QAction('abs:    Absolute value', self.funcTool)
+        func7  = QAction('log:    Log base e', self.funcTool)
+        func8  = QAction('log10:  Log base 10', self.funcTool)
+        func9  = QAction('log2:   Log base 2', self.funcTool)
+        func10 = QAction('exp:    Exponential (e**x)', self.funcTool)
+        funcT1 = QAction('GEOMETRY', self.funcTool)
+        func11 = QAction('sin:    Sine', self.funcTool)
+        func12 = QAction('cos:    Cosine', self.funcTool)
+        func13 = QAction('tan:    Tangent', self.funcTool)
+        func14 = QAction('asin:   Arc-Sine', self.funcTool)
+        func15 = QAction('acos:   Arc-Cosine', self.funcTool)
+        func16 = QAction('atan:   Arc-Tangent', self.funcTool)
+        func17 = QAction('rad:    Convert deg to rad', self.funcTool)
+        func18 = QAction('deg:    Convert rad to deg', self.funcTool)
+        funcT2 = QAction('PROGRAMMING', self.funcTool)
+        func19 = QAction('hex:    Convert to hex', self.funcTool)
+        func20 = QAction('bin:    Convert to bin', self.funcTool)
+        func21 = QAction('dec:    Convert to dec', self.funcTool)
+        func22 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
+        func23 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
+        func24 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
 
-        funcs = [func0,func1,func2,func3,func4,func5,func6,func7,func8,func9,func10,func11,
-                 func12,func13,func14,func15,func16,func17,func18,func19,func20,func21,func22,
+        titleFont = QFont()
+        titleFont.setBold(True)
+        titleFont.setPixelSize(16)
+        funcT0.setFont(titleFont)
+        funcT1.setFont(titleFont)
+        funcT2.setFont(titleFont)
+
+        funcs = [funcT0,func0,func1,func2,func3,func4,func5,func6,func7,func8,func9,func10,funcT1,func11,
+                 func12,func13,func14,func15,func16,func17,func18,funcT2,func19,func20,func21,func22,
                  func23,func24]
         for action in funcs:
-            action.triggered.connect(self.funcTriggered)
+            if (":" in action.text()):
+                action.triggered.connect(self.funcTriggered)
             self.funcTool.addAction(action)
         self.funcTool.setPopupMode(2)
+
+        # Symbol Tool Button
+        symT0 = QAction('MISC', self.symTool)
+        sym0  = QAction('ans:   Result from previous line', self.symTool)
+        sym1  = QAction('to:    Unit conversion (ex. 5 mm to in)', self.symTool)
+        symT1 = QAction('MATH', self.symTool)
+        sym2  = QAction('**:    Power (ex. 2**3 = 8)', self.symTool)
+        sym3  = QAction('%:     Modulus (ex. 5 % 2 = 1)', self.symTool)
+        sym4  = QAction('e:     Exponent (ex. 5e-3 = 0.005)', self.symTool)
+        symT2 = QAction('PROGRAMMING', self.symTool)
+        sym5  = QAction('0x:    Hex (ex. 0x12 = 18)', self.symTool)
+        sym6  = QAction('0b:    Binary (ex. 0b101 = 5)', self.symTool)
+        sym7  = QAction('<<:    Shift left (ex. 2 << 2 = 8)', self.symTool)
+        sym8  = QAction('>>:    Shift right (ex. 8 >> 2 = 2)', self.symTool)
+        sym9  = QAction('|:     Bitwise OR (ex. 8 | 1 = 9)', self.symTool)
+        sym10 = QAction('&:     Bitwise AND (ex. 5 & 1 = 1)', self.symTool)
+        sym11 = QAction('^:     Bitwise XOR (ex. 5 ^ 1 = 4)', self.symTool)
+        symT3 = QAction('SCIENTIFIC NOTATION', self.symTool)
+        sym12 = QAction('p:     Pico (ex. 1p = 1e-12)', self.symTool)
+        sym13 = QAction('n:     Nano (ex. 1n = 1e-9)', self.symTool)
+        sym14 = QAction('u:     Micro (ex. 1u = 1e-6)', self.symTool)
+        sym15 = QAction('m:     Milli (ex. 1m = 1e-3)', self.symTool)
+        sym16 = QAction('k:     Killo (ex. 1k = 1e3)', self.symTool)
+        sym17 = QAction('M:     Mega (ex. 1M = 1e6)', self.symTool)
+        symT4 = QAction('UNITS', self.symTool)
+        sym18 = QAction('mm:    Millimeters', self.symTool)
+        sym19 = QAction('cm:    Centimeters', self.symTool)
+        sym20 = QAction('m:     Meters', self.symTool)
+        sym21 = QAction('km:    Killometers', self.symTool)
+        sym22 = QAction('mil:   Thousandths of an inch', self.symTool)
+        sym23 = QAction('mL:    Milliliter', self.symTool)
+        sym24 = QAction('L:     Liter', self.symTool)
+        sym25 = QAction('tsp:   Teaspoon', self.symTool)
+        sym26 = QAction('tbl:   Tablespoon', self.symTool)
+        sym27 = QAction('oz:    Fluid ounce', self.symTool)
+        sym28 = QAction('pt:    Pint', self.symTool)
+        sym29 = QAction('qt:    Quart', self.symTool)
+        sym30 = QAction('gal:   Gallon', self.symTool)
+        sym31 = QAction('mg:    Milligram', self.symTool)
+        sym32 = QAction('g:     Gram', self.symTool)
+        sym33 = QAction('kg:    Killogram', self.symTool)
+        sym34 = QAction('oz:    Ounce', self.symTool)
+        sym35 = QAction('lbs:   Pound', self.symTool)
+        sym36 = QAction('N:     Newton', self.symTool)
+        sym37 = QAction('kN:    Killonewton', self.symTool)
+        sym38 = QAction('lbf:   Pound force', self.symTool)
+        sym39 = QAction('C:     Degrees celsius', self.symTool)
+        sym40 = QAction('F:     Degrees farenheit', self.symTool)
+
+        syms = [symT0, sym0, sym1, symT1, sym2, sym3, sym4, symT2, sym5, sym6, sym7, sym8, sym9, sym10, sym11,
+                 symT3, sym12, sym13, sym14, sym15, sym16, symT4, sym17, sym18, sym19, sym20, sym21, sym22,
+                 sym23, sym24, sym25, sym25, sym26, sym27, sym28, sym29, sym30, sym31, sym32, sym33, sym34,
+                 sym35, sym36, sym37, sym38, sym39, sym40]
+        for action in syms:
+            if (":" in action.text()):
+                action.triggered.connect(self.symTriggered)
+            self.symTool.addAction(action)
+        self.symTool.setPopupMode(2)
 
         # Text changed callback
         self.textEdit.textChanged.connect(self.updateResults)
@@ -172,8 +241,9 @@ class MainWidget(QWidget):
         self.splitEdit.addWidget(self.textEdit)
         self.splitEdit.addWidget(self.resDisp)
         grid.addWidget(self.titleBar,0,0)
-        grid.addWidget(self.funcTool,0,1,Qt.AlignRight)
-        grid.addWidget(self.splitEdit,1,0,1,2)
+        #grid.addWidget(self.symTool, 0, 1, Qt.AlignRight)
+        grid.addWidget(self.funcTool,0,2,Qt.AlignRight)
+        grid.addWidget(self.splitEdit,1,0,1,3)
 
     def updateResults(self):
         # Get text and break into lines
@@ -288,6 +358,13 @@ class MainWidget(QWidget):
         funcFullText = trigFunc.text()
         funcText = funcFullText.split(':')[0] + '('
         self.textEdit.insertPlainText(funcText)
+        return
+
+    def symTriggered(self):
+        symFunc = self.sender()
+        symFullText = symFunc.text()
+        symText = symFullText.split(':')[0]
+        self.textEdit.insertPlainText(symText)
         return
 
     def clear(self):
