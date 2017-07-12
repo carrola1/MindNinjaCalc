@@ -1,5 +1,6 @@
 import sys,ctypes
-from math import pi,log,log10,log2,ceil,floor,sqrt,sin,cos,tan,asin,acos,atan,exp
+from math import pi,log2,ceil,floor,e
+from cmath import sqrt,sin,cos,tan,asin,acos,atan,exp,log,log10,phase,polar,rect
 from math import radians as rad
 from math import degrees as deg
 from PyQt5.QtWidgets import QTextEdit,QGridLayout,QWidget,QLabel,QToolButton,QAction,QSplitter
@@ -22,6 +23,7 @@ class MainWidget(QWidget):
         self.titleBar = QLabel()
         self.funcTool = QToolButton()
         self.symTool = QToolButton()
+        self.unitTool = QToolButton()
         self.splitEdit = QSplitter()
 
         # Create text fields of length maxLines
@@ -30,18 +32,18 @@ class MainWidget(QWidget):
 
         # Supported functions and symbols
         self.funcs = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'exp', 'sin', 'cos',
-                        'tan', 'abs', 'asin', 'acos', 'atan', 'rad', 'deg', 'hex',
-                        'bin', 'dec', 'min', 'max', 'sum', 'bitget', 'a2h', 'h2a']
+                        'tan', 'abs', 'asin', 'acos', 'atan', 'rad', 'deg', 'polar', 'rect',
+                        'phase', 'hex', 'bin', 'min', 'max', 'sum', 'bitget', 'a2h', 'h2a']
         self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=','%','\|']
         self.prefix = ['0x','0b']
         self.suffix = ['p','n','u','m','k','M']
         self.tweener = ['e']
-        self.symbols = ['ans','pi']
+        self.symbols = ['ans','pi','e']
 
         # Lenth Units (refereced to mm)
-        unitsLen = {'mm':'1', 'cm':'10', 'm':'1000', 'mil':'0.0254', 'in': '25.4',
+        unitsLen = {'mm':'1', 'cm':'10', 'm':'1000', 'km': '1000000', 'mil':'0.0254', 'in': '25.4',
                          'ft':'304.8'}
-        lenKeys = ['mm','cm','m','mil','in','ft']
+        lenKeys = ['mm','cm','m','km','mil','in','ft']
 
         # Volume Units (refereced to ml)
         unitsVol = {'ml': '1', 'mL': '1', 'l': '1000', 'L': '1000', 'c': '236.588',
@@ -98,11 +100,17 @@ class MainWidget(QWidget):
         else:
             functionImage = QPixmap("/Users/Andrew/Documents/Python/MonsterCalc/Functions.png")
         funcIcon.addPixmap(functionImage)
-        self.funcTool.setIcon(funcIcon)
+        #self.funcTool.setIcon(funcIcon)
+        self.funcTool.setText('Functions')
+        self.symTool.setText('Symbols')
+        self.unitTool.setText('Units')
         self.setStyleSheet(
             """
                 QToolButton {
                     background-color: #a0a0a0;
+                    font-family: "Lucida Console";
+                    font-size: 18px;
+                    color: #232323;
                 }
 
                 QMenu {
@@ -139,22 +147,24 @@ class MainWidget(QWidget):
         func8  = QAction('log10:  Log base 10', self.funcTool)
         func9  = QAction('log2:   Log base 2', self.funcTool)
         func10 = QAction('exp:    Exponential (e**x)', self.funcTool)
+        func11 = QAction('phase:  Phase of complex #', self.funcTool)
+        func12 = QAction('rect:   Complex polar to rect (mag,ang)', self.funcTool)
+        func13 = QAction('polar:  Complex rect to polar', self.funcTool)
         funcT1 = QAction('GEOMETRY', self.funcTool)
-        func11 = QAction('sin:    Sine', self.funcTool)
-        func12 = QAction('cos:    Cosine', self.funcTool)
-        func13 = QAction('tan:    Tangent', self.funcTool)
-        func14 = QAction('asin:   Arc-Sine', self.funcTool)
-        func15 = QAction('acos:   Arc-Cosine', self.funcTool)
-        func16 = QAction('atan:   Arc-Tangent', self.funcTool)
-        func17 = QAction('rad:    Convert deg to rad', self.funcTool)
-        func18 = QAction('deg:    Convert rad to deg', self.funcTool)
+        func14 = QAction('sin:    Sine', self.funcTool)
+        func15 = QAction('cos:    Cosine', self.funcTool)
+        func16 = QAction('tan:    Tangent', self.funcTool)
+        func17 = QAction('asin:   Arc-Sine', self.funcTool)
+        func18 = QAction('acos:   Arc-Cosine', self.funcTool)
+        func19 = QAction('atan:   Arc-Tangent', self.funcTool)
+        func20 = QAction('rad:    Convert deg to rad', self.funcTool)
+        func21 = QAction('deg:    Convert rad to deg', self.funcTool)
         funcT2 = QAction('PROGRAMMING', self.funcTool)
-        func19 = QAction('hex:    Convert to hex', self.funcTool)
-        func20 = QAction('bin:    Convert to bin', self.funcTool)
-        func21 = QAction('dec:    Convert to dec', self.funcTool)
-        func22 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
-        func23 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
-        func24 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
+        func22 = QAction('hex:    Convert to hex', self.funcTool)
+        func23 = QAction('bin:    Convert to bin', self.funcTool)
+        func24 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
+        func25 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
+        func26 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
 
         titleFont = QFont()
         titleFont.setBold(True)
@@ -163,9 +173,9 @@ class MainWidget(QWidget):
         funcT1.setFont(titleFont)
         funcT2.setFont(titleFont)
 
-        funcs = [funcT0,func0,func1,func2,func3,func4,func5,func6,func7,func8,func9,func10,funcT1,func11,
-                 func12,func13,func14,func15,func16,func17,func18,funcT2,func19,func20,func21,func22,
-                 func23,func24]
+        funcs = [funcT0,func0,func1,func2,func3,func4,func5,func6,func7,func8,func9,func10,func11,
+                 func12,func13,funcT1,func14,func15,func16,func17,func18,funcT2,func19,func20,func21,func22,
+                 func23,func24,func25,func26]
         for action in funcs:
             if (":" in action.text()):
                 action.triggered.connect(self.funcTriggered)
@@ -195,40 +205,64 @@ class MainWidget(QWidget):
         sym15 = QAction('m:     Milli (ex. 1m = 1e-3)', self.symTool)
         sym16 = QAction('k:     Killo (ex. 1k = 1e3)', self.symTool)
         sym17 = QAction('M:     Mega (ex. 1M = 1e6)', self.symTool)
-        symT4 = QAction('UNITS', self.symTool)
-        sym18 = QAction('mm:    Millimeters', self.symTool)
-        sym19 = QAction('cm:    Centimeters', self.symTool)
-        sym20 = QAction('m:     Meters', self.symTool)
-        sym21 = QAction('km:    Killometers', self.symTool)
-        sym22 = QAction('mil:   Thousandths of an inch', self.symTool)
-        sym23 = QAction('mL:    Milliliter', self.symTool)
-        sym24 = QAction('L:     Liter', self.symTool)
-        sym25 = QAction('tsp:   Teaspoon', self.symTool)
-        sym26 = QAction('tbl:   Tablespoon', self.symTool)
-        sym27 = QAction('oz:    Fluid ounce', self.symTool)
-        sym28 = QAction('pt:    Pint', self.symTool)
-        sym29 = QAction('qt:    Quart', self.symTool)
-        sym30 = QAction('gal:   Gallon', self.symTool)
-        sym31 = QAction('mg:    Milligram', self.symTool)
-        sym32 = QAction('g:     Gram', self.symTool)
-        sym33 = QAction('kg:    Killogram', self.symTool)
-        sym34 = QAction('oz:    Ounce', self.symTool)
-        sym35 = QAction('lbs:   Pound', self.symTool)
-        sym36 = QAction('N:     Newton', self.symTool)
-        sym37 = QAction('kN:    Killonewton', self.symTool)
-        sym38 = QAction('lbf:   Pound force', self.symTool)
-        sym39 = QAction('C:     Degrees celsius', self.symTool)
-        sym40 = QAction('F:     Degrees farenheit', self.symTool)
 
+        symT0.setFont(titleFont)
+        symT1.setFont(titleFont)
+        symT2.setFont(titleFont)
+        symT3.setFont(titleFont)
+        
         syms = [symT0, sym0, sym1, symT1, sym2, sym3, sym4, symT2, sym5, sym6, sym7, sym8, sym9, sym10, sym11,
-                 symT3, sym12, sym13, sym14, sym15, sym16, symT4, sym17, sym18, sym19, sym20, sym21, sym22,
-                 sym23, sym24, sym25, sym25, sym26, sym27, sym28, sym29, sym30, sym31, sym32, sym33, sym34,
-                 sym35, sym36, sym37, sym38, sym39, sym40]
+                 symT3, sym12, sym13, sym14, sym15, sym16, sym17]
         for action in syms:
             if (":" in action.text()):
                 action.triggered.connect(self.symTriggered)
             self.symTool.addAction(action)
         self.symTool.setPopupMode(2)
+
+        # Unit Tool Button
+        unitT0 = QAction('LENGTH', self.unitTool)
+        unit0 = QAction('mm:    Millimeters', self.unitTool)
+        unit1 = QAction('cm:    Centimeters', self.unitTool)
+        unit2 = QAction('m:     Meters', self.unitTool)
+        unit3 = QAction('km:    Killometers', self.unitTool)
+        unitT1 = QAction('VOLUME', self.unitTool)
+        unit4 = QAction('mil:   Thousandths of an inch', self.unitTool)
+        unit5 = QAction('mL:    Milliliter', self.unitTool)
+        unit6 = QAction('L:     Liter', self.unitTool)
+        unit7 = QAction('tsp:   Teaspoon', self.unitTool)
+        unit8 = QAction('tbl:   Tablespoon', self.unitTool)
+        unit9 = QAction('oz:    Fluid ounce', self.unitTool)
+        unit10 = QAction('pt:    Pint', self.unitTool)
+        unit11 = QAction('qt:    Quart', self.unitTool)
+        unit12 = QAction('gal:   Gallon', self.unitTool)
+        unitT2 = QAction('MASS', self.unitTool)
+        unit13 = QAction('mg:    Milligram', self.unitTool)
+        unit14 = QAction('g:     Gram', self.unitTool)
+        unit15 = QAction('kg:    Killogram', self.unitTool)
+        unit16 = QAction('oz:    Ounce', self.unitTool)
+        unit17 = QAction('lbs:   Pound', self.unitTool)
+        unitT3 = QAction('FORCE', self.unitTool)
+        unit18 = QAction('N:     Newton', self.unitTool)
+        unit19 = QAction('kN:    Killonewton', self.unitTool)
+        unit20 = QAction('lbf:   Pound force', self.unitTool)
+        unitT4 = QAction('TEMPERATURE', self.unitTool)
+        unit21 = QAction('C:     Degrees celsius', self.unitTool)
+        unit22 = QAction('F:     Degrees farenheit', self.unitTool)
+
+        unitT0.setFont(titleFont)
+        unitT1.setFont(titleFont)
+        unitT2.setFont(titleFont)
+        unitT3.setFont(titleFont)
+        unitT4.setFont(titleFont)
+        
+        units = [unitT0, unit0, unit1, unit2, unit3, unitT1, unit4, unit5, unit6, unit7, unit8, unit9, unit10, unit11,
+                unit12, unitT2, unit13, unit14, unit15, unit16, unit17, unitT3, unit18, unit19, unit20, unitT4, 
+                unit21, unit22]
+        for action in units:
+            if (":" in action.text()):
+                action.triggered.connect(self.unitTriggered)
+            self.unitTool.addAction(action)
+        self.unitTool.setPopupMode(2)
 
         # Text changed callback
         self.textEdit.textChanged.connect(self.updateResults)
@@ -237,13 +271,17 @@ class MainWidget(QWidget):
         grid = QGridLayout()
         self.setLayout(grid)
         self.titleBar.setFixedHeight(30)
-        self.funcTool.setIconSize(QSize(200, 23))
+        #self.funcTool.setIconSize(QSize(200, 23))
+        self.funcTool.setFixedWidth(130)
+        self.symTool.setFixedWidth(130)
+        self.unitTool.setFixedWidth(130)
         self.splitEdit.addWidget(self.textEdit)
         self.splitEdit.addWidget(self.resDisp)
-        grid.addWidget(self.titleBar,0,0)
-        #grid.addWidget(self.symTool, 0, 1, Qt.AlignRight)
-        grid.addWidget(self.funcTool,0,2,Qt.AlignRight)
-        grid.addWidget(self.splitEdit,1,0,1,3)
+        grid.addWidget(self.titleBar,0,0, Qt.AlignLeft)
+        grid.addWidget(self.unitTool, 0, 2, Qt.AlignRight)
+        grid.addWidget(self.symTool, 0, 3, Qt.AlignRight)
+        grid.addWidget(self.funcTool,0,4,Qt.AlignRight)
+        grid.addWidget(self.splitEdit,1,0,1,5)
 
     def updateResults(self):
         # Get text and break into lines
@@ -279,8 +317,10 @@ class MainWidget(QWidget):
                 self.highlight.updateRules(self.symKeys)
         elif (' to ' in newLine):
             # Conversion detected
-            newLine = self.convUnits(newLine)
-            self.evalExp(newLine, lineNum)
+            newLine,resUnit = self.convUnits(newLine)
+            err = self.evalExp(newLine, lineNum)
+            if (err == 0):
+                self.resText[lineNum] += (' ' + resUnit)
         else:
             self.evalExp(newLine, lineNum)
         return
@@ -291,7 +331,7 @@ class MainWidget(QWidget):
             # Also recognizes 'ans' and replaced with result from previous line
             for key in self.userSyms:
                 if (lineNum > 0):
-                    self.userSyms['ans'] = self.resText[lineNum-1]
+                    self.userSyms['ans'] = self.resText[lineNum-1].split(' ')[0]
                 else:
                     self.userSyms['ans'] = 'None'
                 newExp = re.sub(r'\b'+key+r'\b',self.userSyms[key],newExp)
@@ -318,40 +358,47 @@ class MainWidget(QWidget):
                 self.resText[lineNum] = newResult
             else:
                 self.resText[lineNum] = ''
+            error = 0
         except:
             self.resText[lineNum] = ''
-        return
+            error = 1
+        return error
 
     def convUnits(self,newLine):
         newLine = newLine.split('to')
         convFrom = newLine[0]
         convTo = newLine[1]
+        newUnit = ''
         try:
             # Special case for 'C to F' and 'F to C'
             if ((' C ' in convFrom) & (' F' in convTo)):
                 convFrom = re.sub(r'\b' + 'C' + r'\b', '*1.8+32', convFrom)
                 convTo = re.sub(r'\b' + 'F' + r'\b', '', convTo)
                 newLine = convFrom + convTo
-                return newLine
+                newUnit = 'F'
+                return newLine,newUnit
             elif ((' F ' in convFrom) & (' C' in convTo)):
                 convFrom = re.sub(r'\b' + 'F' + r'\b', '/1.8-17.778', convFrom)
                 convTo = re.sub(r'\b' + 'C' + r'\b', '', convTo)
                 newLine = convFrom + convTo
-                return newLine
+                newUnit = 'C'
+                return newLine,newUnit
             else:
                 for unitType in self.units:
                     for unit in unitType:
                         convFrom = re.sub(r'\b' + unit + r'\b', '*' + unitType[unit], convFrom)
                         convTo = re.sub(r'\b' + unit + r'\b', '/' + unitType[unit], convTo)
+                        if ((convTo != newLine[1]) & (newUnit == '')):
+                            newUnit = unit
                     if (convFrom != newLine[0]) & (convTo != newLine[1]):
                         newLine = convFrom + convTo
-                        return newLine
+                        return newLine,newUnit
                     else:
                         convFrom = newLine[0]
                         convTo = newLine[1]
         except:
             pass
-        return newLine
+        return newLine,newUnit
 
     def funcTriggered(self):
         trigFunc = self.sender()
@@ -365,6 +412,13 @@ class MainWidget(QWidget):
         symFullText = symFunc.text()
         symText = symFullText.split(':')[0]
         self.textEdit.insertPlainText(symText)
+        return
+    
+    def unitTriggered(self):
+        unitFunc = self.sender()
+        unitFullText = unitFunc.text()
+        unitText = unitFullText.split(':')[0]
+        self.textEdit.insertPlainText(unitText)
         return
 
     def clear(self):
