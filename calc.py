@@ -311,10 +311,17 @@ class MainWidget(QWidget):
             newVar = newLine[0].strip()
             if (newVar != '') & (' ' not in newVar):
                 self.evalExp(newLine[1],lineNum)
-                self.userSyms[newVar] = self.userSyms.pop(self.symKeys[lineNum])
+                try:
+                    self.userSyms[newVar] = self.userSyms.pop(self.symKeys[lineNum])
+                except:
+                    pass    # In case variable doesn't exist
                 self.userSyms[newVar] = self.resText[lineNum]
                 self.symKeys[lineNum] = newVar
                 self.highlight.updateRules(self.symKeys)
+            else:
+                self.symKeys[lineNum] = 'uu' + str(lineNum)
+                self.userSyms[newVar] = self.userSyms.pop(self.symKeys[lineNum])
+                self.userSyms[newVar] = self.symKeys[lineNum]
         elif (' to ' in newLine):
             # Conversion detected
             newLine,resUnit = self.convUnits(newLine)

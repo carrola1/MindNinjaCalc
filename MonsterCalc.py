@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import sys,ctypes
-from PyQt5.QtWidgets import QApplication,QMainWindow,QAction,QFileDialog,QInputDialog
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication,QMainWindow,QAction,QFileDialog,QInputDialog,QMessageBox
+from PyQt5.QtGui import QIcon,QPixmap
+from PyQt5.QtCore import QSize,Qt
 from calc import MainWidget
 
 class MainWindow(QMainWindow):
@@ -17,9 +18,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('MONSTER CALC')
         if ('win32' in sys.platform):
             self.setWindowIcon(QIcon('C:\GitHub\MonsterCalc\Monster.png'))
+            rawMonsterIco = QPixmap('C:\GitHub\MonsterCalc\Monster.png')
         else:
             self.setWindowIcon(QIcon('/Users/Andrew/Documents/Python/MonsterCalc/Monster.png'))
-
+            rawMonsterIco = QPixmap('/Users/Andrew/Documents/Python/MonsterCalc/Monster.png')
+        self.monsterIco = rawMonsterIco.scaledToWidth(50,Qt.SmoothTransformation)
         self.saveName = ''
 
         # Create Menu
@@ -61,6 +64,7 @@ class MainWindow(QMainWindow):
         fileMenu = menubar.addMenu('&File')
         editMenu = menubar.addMenu('&Edit')
         settingsMenu = menubar.addMenu('&Settings')
+        helpMenu = menubar.addMenu('&Help')
 
         # File menu
         openAction = QAction('Open', self)
@@ -108,6 +112,11 @@ class MainWindow(QMainWindow):
         sigFigAction.triggered.connect(self.setSigFigs)
         settingsMenu.addAction(sigFigAction)
 
+        # Help menu
+        aboutAction = QAction('About', self)
+        aboutAction.triggered.connect(self.about)
+        helpMenu.addAction(aboutAction)
+
     def openDialog(self):
         try:
             fname = QFileDialog.getOpenFileName(self, 'Open file', '/home','Text files (*.txt)')
@@ -151,6 +160,14 @@ class MainWindow(QMainWindow):
                                         'Set # of significant figures to display:')
         if ok:
             self.editor.setSigFigs(int(text))
+        return
+
+    def about(self):
+        msgBox = QMessageBox()
+        msgBox.setIconPixmap(self.monsterIco)
+        msgBox.setText("Monster Calc v1.2\nCreated by Andrew Carroll\n\nSpecial thanks to Mom for the artwork!")
+        msgBox.setWindowTitle('About')
+        msgBox.exec()
         return
 
 if __name__ == '__main__':
