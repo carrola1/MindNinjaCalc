@@ -1,28 +1,39 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-import sys,ctypes
-from PyQt5.QtWidgets import QApplication,QMainWindow,QAction,QFileDialog,QInputDialog,QMessageBox
-from PyQt5.QtGui import QIcon,QPixmap
-from PyQt5.QtCore import QSize,Qt
+import sys
+import os
+import ctypes
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
+from PyQt5.QtWidgets import QInputDialog, QMessageBox
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import Qt
 from calc import MainWidget
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        # Create editor
         self.editor = MainWidget()
         self.setCentralWidget(self.editor)
 
+        # Create main view and icon
         self.setWindowTitle("MONSTER CALC")
         self.setGeometry(600, 300, 700, 500)
         self.setWindowTitle('MONSTER CALC')
         if ('win32' in sys.platform):
-            self.setWindowIcon(QIcon('C:\GitHub\MonsterCalc\Monster.png'))
-            rawMonsterIco = QPixmap('C:\GitHub\MonsterCalc\Monster.png')
+            path = os.path.abspath(os.path.dirname(sys.argv[0]))
+            self.setWindowIcon(QIcon(path + '\Monster.png'))
+            rawMonsterIco = QPixmap(path + '\Monster.png')
         else:
-            self.setWindowIcon(QIcon('/Users/Andrew/Documents/Python/MonsterCalc/Monster.png'))
-            rawMonsterIco = QPixmap('/Users/Andrew/Documents/Python/MonsterCalc/Monster.png')
-        self.monsterIco = rawMonsterIco.scaledToWidth(50,Qt.SmoothTransformation)
+            self.setWindowIcon(
+                QIcon('/Users/Andrew/Documents/Python/MonsterCalc/Monster.png'))
+            rawMonsterIco = QPixmap(
+                '/Users/Andrew/Documents/Python/MonsterCalc/Monster.png')
+        self.monsterIco = rawMonsterIco.scaledToWidth(
+            50, Qt.SmoothTransformation)
         self.saveName = ''
 
         # Create Menu
@@ -119,8 +130,9 @@ class MainWindow(QMainWindow):
 
     def openDialog(self):
         try:
-            fname = QFileDialog.getOpenFileName(self, 'Open file', '/home','Text files (*.txt)')
-            f = open(fname[0],'r')
+            fname = QFileDialog.getOpenFileName(
+                self, 'Open file', '/home', 'Text files (*.txt)')
+            f = open(fname[0], 'r')
             with f:
                 self.editor.textEdit.setPlainText(f.read())
             self.saveName = fname[0]
@@ -130,8 +142,9 @@ class MainWindow(QMainWindow):
 
     def saveDialog(self):
         try:
-            fname = QFileDialog.getSaveFileName(self,'Save file', '/home',"Text files (*.txt)")
-            f = open(fname[0],'w')
+            fname = QFileDialog.getSaveFileName(
+                self, 'Save file', '/home', 'Text files (*.txt)')
+            f = open(fname[0], 'w')
             with f:
                 f.write(self.editor.textEdit.toPlainText())
             self.saveName = fname[0]
@@ -157,7 +170,8 @@ class MainWindow(QMainWindow):
 
     def setSigFigs(self):
         text, ok = QInputDialog.getText(self, 'Significant Figures',
-                                        'Set # of significant figures to display:')
+                                        'Set # of significant figures' +
+                                        'to display:')
         if ok:
             self.editor.setSigFigs(int(text))
         return
@@ -165,10 +179,12 @@ class MainWindow(QMainWindow):
     def about(self):
         msgBox = QMessageBox()
         msgBox.setIconPixmap(self.monsterIco)
-        msgBox.setText("Monster Calc v1.2\nCreated by Andrew Carroll\n\nSpecial thanks to Mom for the artwork!")
+        msgBox.setText('Monster Calc v1.2\nCreated by Andrew Carroll\n\n' +
+                       'Special thanks to Mom for the artwork!')
         msgBox.setWindowTitle('About')
         msgBox.exec()
         return
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -179,4 +195,3 @@ if __name__ == '__main__':
     ex.show()
     ex.editor.textEdit.setFocus()
     sys.exit(app.exec_())
-
