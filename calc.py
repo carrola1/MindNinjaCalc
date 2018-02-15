@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QToolButton, QAction, QSplitter
 from PyQt5.QtGui import QPixmap, QIcon, QFont
 from PyQt5.QtCore import QSize, Qt
 from syntaxhighlighter import KeywordHighlighter
-from myfuncs import bitget, h2a, a2h
+from myfuncs import bitget, h2a, a2h, eng_string
 from myfuncs import mySum as sum
 import re
 
@@ -91,6 +91,9 @@ class MainWidget(QWidget):
 
         # Default # sig figs to display
         self.sigFigs = 5
+
+        # Set result formatting ('scientific', 'engineering', 'si')
+        self.resFormat = 'engineering'
 
         self.initUI()
 
@@ -252,28 +255,29 @@ class MainWidget(QWidget):
         unit2 = QAction('m:     Meters', self.unitTool)
         unit3 = QAction('km:    Killometers', self.unitTool)
         unit4 = QAction('mil:   Thousandths of an inch', self.unitTool)
+        unit5 = QAction('in:    Inches', self.unitTool)
         unitT1 = QAction('VOLUME', self.unitTool)
-        unit5 = QAction('mL:    Milliliter', self.unitTool)
-        unit6 = QAction('L:     Liter', self.unitTool)
-        unit7 = QAction('tsp:   Teaspoon', self.unitTool)
-        unit8 = QAction('tbl:   Tablespoon', self.unitTool)
-        unit9 = QAction('oz:    Fluid ounce', self.unitTool)
-        unit10 = QAction('pt:    Pint', self.unitTool)
-        unit11 = QAction('qt:    Quart', self.unitTool)
-        unit12 = QAction('gal:   Gallon', self.unitTool)
+        unit6 = QAction('mL:    Milliliter', self.unitTool)
+        unit7 = QAction('L:     Liter', self.unitTool)
+        unit8 = QAction('tsp:   Teaspoon', self.unitTool)
+        unit9 = QAction('tbl:   Tablespoon', self.unitTool)
+        unit10 = QAction('oz:    Fluid ounce', self.unitTool)
+        unit11 = QAction('pt:    Pint', self.unitTool)
+        unit12 = QAction('qt:    Quart', self.unitTool)
+        unit13 = QAction('gal:   Gallon', self.unitTool)
         unitT2 = QAction('MASS', self.unitTool)
-        unit13 = QAction('mg:    Milligram', self.unitTool)
-        unit14 = QAction('g:     Gram', self.unitTool)
-        unit15 = QAction('kg:    Killogram', self.unitTool)
-        unit16 = QAction('oz:    Ounce', self.unitTool)
-        unit17 = QAction('lbs:   Pound', self.unitTool)
+        unit14 = QAction('mg:    Milligram', self.unitTool)
+        unit15 = QAction('g:     Gram', self.unitTool)
+        unit16 = QAction('kg:    Killogram', self.unitTool)
+        unit17 = QAction('oz:    Ounce', self.unitTool)
+        unit18 = QAction('lbs:   Pound', self.unitTool)
         unitT3 = QAction('FORCE', self.unitTool)
-        unit18 = QAction('N:     Newton', self.unitTool)
-        unit19 = QAction('kN:    Killonewton', self.unitTool)
-        unit20 = QAction('lbf:   Pound force', self.unitTool)
+        unit19 = QAction('N:     Newton', self.unitTool)
+        unit20 = QAction('kN:    Killonewton', self.unitTool)
+        unit21 = QAction('lbf:   Pound force', self.unitTool)
         unitT4 = QAction('TEMPERATURE', self.unitTool)
-        unit21 = QAction('C:     Degrees celsius', self.unitTool)
-        unit22 = QAction('F:     Degrees farenheit', self.unitTool)
+        unit22 = QAction('C:     Degrees celsius', self.unitTool)
+        unit23 = QAction('F:     Degrees farenheit', self.unitTool)
 
         unitT0.setFont(titleFont)
         unitT1.setFont(titleFont)
@@ -281,10 +285,10 @@ class MainWidget(QWidget):
         unitT3.setFont(titleFont)
         unitT4.setFont(titleFont)
 
-        units = [unitT0, unit0, unit1, unit2, unit3, unitT1, unit4, unit5,
-                 unit6, unit7, unit8, unit9, unit10, unit11, unit12, unitT2,
-                 unit13, unit14, unit15, unit16, unit17, unitT3, unit18,
-                 unit19, unit20, unitT4, unit21, unit22]
+        units = [unitT0, unit0, unit1, unit2, unit3, unit4, unit5, unitT1,
+                 unit6, unit7, unit8, unit9, unit10, unit11, unit12, unit13,
+                 unitT2, unit14, unit15, unit16, unit17, unit18, unitT3,
+                 unit19, unit20, unit21, unitT4, unit22, unit23]
         for action in units:
             if (":" in action.text()):
                 action.triggered.connect(self.unitTriggered)
@@ -382,10 +386,9 @@ class MainWidget(QWidget):
 
             newResult = eval(newExp)
             try:
-                # Apply sig figs
-                if (newResult % 1 != 0):
-                    newResult = '{0:.{digits}g}'.format(
-                        newResult, digits=self.sigFigs)
+
+                newResult = eng_string(newResult, self.sigFigs, '%s',
+                                       self.resFormat)
             except:
                 pass
             newResult = str(newResult)

@@ -123,6 +123,21 @@ class MainWindow(QMainWindow):
         sigFigAction.triggered.connect(self.setSigFigs)
         settingsMenu.addAction(sigFigAction)
 
+        resFormatMenu = settingsMenu.addMenu('Results Format')
+        self.sciFormatAction = QAction('Scientific (1.0e4)', self)
+        self.engFormatAction = QAction('Engineering (10.0e3)', self)
+        self.siFormatAction = QAction('SI Unit (10.0k)', self)
+        self.sciFormatAction.triggered.connect(self.setResFormatSci)
+        self.sciFormatAction.setCheckable(True)
+        self.engFormatAction.triggered.connect(self.setResFormatEng)
+        self.engFormatAction.setCheckable(True)
+        self.engFormatAction.setChecked(True)
+        self.siFormatAction.triggered.connect(self.setResFormatSi)
+        self.siFormatAction.setCheckable(True)
+        resFormatMenu.addAction(self.sciFormatAction)
+        resFormatMenu.addAction(self.engFormatAction)
+        resFormatMenu.addAction(self.siFormatAction)
+
         # Help menu
         aboutAction = QAction('About', self)
         aboutAction.triggered.connect(self.about)
@@ -174,6 +189,27 @@ class MainWindow(QMainWindow):
                                         'to display:')
         if ok:
             self.editor.setSigFigs(int(text))
+        return
+
+    def setResFormatSci(self):
+        self.editor.resFormat = 'scientific'
+        self.sciFormatAction.setChecked(True)
+        self.engFormatAction.setChecked(False)
+        self.siFormatAction.setChecked(False)
+        return
+
+    def setResFormatEng(self):
+        self.editor.resFormat = 'engineering'
+        self.sciFormatAction.setChecked(False)
+        self.engFormatAction.setChecked(True)
+        self.siFormatAction.setChecked(False)
+        return
+
+    def setResFormatSi(self):
+        self.editor.resFormat = 'si'
+        self.sciFormatAction.setChecked(False)
+        self.engFormatAction.setChecked(False)
+        self.siFormatAction.setChecked(True)
         return
 
     def about(self):
