@@ -7,7 +7,7 @@ import ctypes
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
 from PyQt5.QtWidgets import QInputDialog, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 from calc import MainWidget
 
 
@@ -119,6 +119,12 @@ class MainWindow(QMainWindow):
         editMenu.addAction(clearAction)
 
         # Settings menu
+        programname = os.path.basename(__file__)
+        programbase, ext = os.path.splitext(programname)
+        settings = QSettings("company", programbase)
+        self.editor.sigFigs = settings.value("sig_figs")
+        self.editor.resFormat = settings.value("res_format")
+
         sigFigAction = QAction('Significant Figures..', self)
         sigFigAction.triggered.connect(self.setSigFigs)
         settingsMenu.addAction(sigFigAction)
@@ -129,11 +135,13 @@ class MainWindow(QMainWindow):
         self.siFormatAction = QAction('SI Unit (10.0k)', self)
         self.sciFormatAction.triggered.connect(self.setResFormatSci)
         self.sciFormatAction.setCheckable(True)
+        self.sciFormatAction.setChecked(self.editor.resFormat == 'scientific')
         self.engFormatAction.triggered.connect(self.setResFormatEng)
         self.engFormatAction.setCheckable(True)
-        self.engFormatAction.setChecked(True)
+        self.engFormatAction.setChecked(self.editor.resFormat == 'engineering')
         self.siFormatAction.triggered.connect(self.setResFormatSi)
         self.siFormatAction.setCheckable(True)
+        self.siFormatAction.setChecked(self.editor.resFormat == 'si')
         resFormatMenu.addAction(self.sciFormatAction)
         resFormatMenu.addAction(self.engFormatAction)
         resFormatMenu.addAction(self.siFormatAction)
@@ -189,6 +197,7 @@ class MainWindow(QMainWindow):
                                         'to display:')
         if ok:
             self.editor.setSigFigs(int(text))
+            self.saveSettings()
         return
 
     def setResFormatSci(self):
@@ -196,6 +205,7 @@ class MainWindow(QMainWindow):
         self.sciFormatAction.setChecked(True)
         self.engFormatAction.setChecked(False)
         self.siFormatAction.setChecked(False)
+        self.saveSettings()
         return
 
     def setResFormatEng(self):
@@ -203,6 +213,7 @@ class MainWindow(QMainWindow):
         self.sciFormatAction.setChecked(False)
         self.engFormatAction.setChecked(True)
         self.siFormatAction.setChecked(False)
+        self.saveSettings()
         return
 
     def setResFormatSi(self):
@@ -210,7 +221,21 @@ class MainWindow(QMainWindow):
         self.sciFormatAction.setChecked(False)
         self.engFormatAction.setChecked(False)
         self.siFormatAction.setChecked(True)
+        self.saveSettings()
         return
+
+    def saveSettings(self):
+        programname = os.path.basename(__file__)
+        programbase, ext = os.path.splitext(programname)
+        settings = QSettings("company", programbase)
+        settings.setValue('sig_figs', self.getSigFigs())
+        settings.setValue('res_format', self.getResFormat())
+
+    def getSigFigs(self):
+        return self.editor.sigFigs
+
+    def getResFormat(self):
+        return self.editor.resFormat
 
     def about(self):
         msgBox = QMessageBox()

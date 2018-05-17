@@ -339,7 +339,7 @@ class MainWidget(QWidget):
             # Variable assignment detected
             newLine = newLine.split('=')
             newVar = newLine[0].strip()
-            if (newVar != '') & (' ' not in newVar):
+            if ((newVar != '') & (' ' not in newVar)):
                 self.evalExp(newLine[1], lineNum)
                 try:
                     self.userSyms[newVar] = self.userSyms.pop(
