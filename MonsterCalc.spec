@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['MonsterCalc.py'],
-             pathex=['C:\\Users\\acarro12\\AppData\\Local\\Programs\\Python\\Python35\\Lib\\site-packages\\PyQt5\\Qt\\bin', 'C:\\GitHub\\MonsterCalc'],
+             pathex=['C:\\Users\\acarro12\\AppData\\Local\\Programs\\Python\\Python36\\Lib\\site-packages\\PySide2', 'C:\\GitHub\\MonsterCalc'],
              binaries=[],
              datas=[],
              hiddenimports=[],

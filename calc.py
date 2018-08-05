@@ -6,10 +6,10 @@ from cmath import sqrt, sin, cos, tan, asin, acos, atan, exp, log, log10
 from cmath import phase, polar, rect
 from math import radians as rad
 from math import degrees as deg
-from PyQt5.QtWidgets import QTextEdit, QGridLayout, QWidget, QLabel
-from PyQt5.QtWidgets import QToolButton, QAction, QSplitter
-from PyQt5.QtGui import QPixmap, QIcon, QFont
-from PyQt5.QtCore import QSize, Qt
+from PySide2.QtWidgets import QTextEdit, QGridLayout, QWidget, QLabel
+from PySide2.QtWidgets import QToolButton, QAction, QSplitter
+from PySide2.QtGui import QPixmap, QIcon, QFont
+from PySide2.QtCore import QSize, Qt
 from syntaxhighlighter import KeywordHighlighter
 from myfuncs import bitget, h2a, a2h, eng_string
 from myfuncs import mySum as sum
@@ -95,6 +95,9 @@ class MainWidget(QWidget):
         # Set result formatting ('scientific', 'engineering', 'si')
         self.resFormat = 'engineering'
 
+        # Convert '^' to '**'
+        self.convXorToExp = 'True'
+
         self.initUI()
 
     def initUI(self):
@@ -150,11 +153,11 @@ class MainWidget(QWidget):
             """)
 
         # Do not allow text wrapping
-        self.textEdit.setLineWrapMode(0)
-        self.resDisp.setLineWrapMode(0)
+        self.textEdit.LineWrapMode = QTextEdit.NoWrap
+        self.resDisp.LineWrapMode = QTextEdit.NoWrap
 
         # Turn off display scrollbar and synchronize scrolling
-        self.resDisp.setVerticalScrollBarPolicy(1)
+        self.resDisp.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.textEdit.verticalScrollBar().valueChanged.connect(
             self.resDisp.verticalScrollBar().setValue)
         self.resDisp.verticalScrollBar().valueChanged.connect(
@@ -208,7 +211,7 @@ class MainWidget(QWidget):
             if (":" in action.text()):
                 action.triggered.connect(self.funcTriggered)
             self.funcTool.addAction(action)
-        self.funcTool.setPopupMode(2)
+        self.funcTool.setPopupMode(QToolButton.InstantPopup)
 
         # Symbol Tool Button
         symT0 = QAction('MISC', self.symTool)
@@ -246,7 +249,7 @@ class MainWidget(QWidget):
             if (":" in action.text()):
                 action.triggered.connect(self.symTriggered)
             self.symTool.addAction(action)
-        self.symTool.setPopupMode(2)
+        self.symTool.setPopupMode(QToolButton.InstantPopup)
 
         # Unit Tool Button
         unitT0 = QAction('LENGTH', self.unitTool)
@@ -293,7 +296,7 @@ class MainWidget(QWidget):
             if (":" in action.text()):
                 action.triggered.connect(self.unitTriggered)
             self.unitTool.addAction(action)
-        self.unitTool.setPopupMode(2)
+        self.unitTool.setPopupMode(QToolButton.InstantPopup)
 
         # Text changed callback
         self.textEdit.textChanged.connect(self.updateResults)
@@ -383,6 +386,9 @@ class MainWidget(QWidget):
             newExp = re.sub(r'(\d+[.,]?\d*)(m\b)', r'(\g<1>*10**-3)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(k\b)', r'(\g<1>*10**3)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(M\b)', r'(\g<1>*10**6)', newExp)
+
+            if (self.convXorToExp == 'True'):
+                newExp = re.sub('\^', '**', newExp)
 
             newResult = eval(newExp)
             try:
