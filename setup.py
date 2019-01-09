@@ -19,7 +19,7 @@ executables = [
 ]
 
 setup(name='MonsterCalc',
-      version = '1.1',
+      version = '1.4',
       description = 'Super calculator',
       options = dict(build_exe = buildOptions),
       executables = executables)

@@ -369,6 +369,11 @@ class MainWidget(QWidget):
 
     def evalExp(self, newExp, lineNum):
         try:
+            # if 1st symbol is an operator, implicittly insert 'ans'
+            if newExp[0] in ['+', '-', '*', '<<', '>>', '^', '&', '/', '=',
+                          '%', '\|']:
+                newExp = 'ans' + newExp
+
             # Find and replace user-defined symbols with values
             # Also recognizes 'ans' and replaced with result from previous line
             for key in self.userSyms:

@@ -1,9 +1,9 @@
 missing module named 'win32com.gen_py' - imported by win32com, c:\users\acarro12\appdata\local\programs\python\python36\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_win32comgenpy.py
 missing module named pyimod03_importers - imported by c:\users\acarro12\appdata\local\programs\python\python36\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_pkgres.py
-missing module named 'pkg_resources.extern.pyparsing' - imported by pkg_resources._vendor.packaging.markers, pkg_resources._vendor.packaging.requirements
+missing module named 'pkg_resources.extern.pyparsing' - imported by pkg_resources._vendor.packaging.requirements, pkg_resources._vendor.packaging.markers
+missing module named StringIO - imported by numpy.lib.utils, numpy.testing.utils, scipy._lib.six, numpy.lib.format, pkg_resources._vendor.six
 missing module named 'com.sun' - imported by pkg_resources._vendor.appdirs
 missing module named com - imported by pkg_resources._vendor.appdirs
-missing module named StringIO - imported by numpy.lib.utils, numpy.testing.utils, scipy._lib.six, numpy.lib.format, pkg_resources._vendor.six
 missing module named __builtin__ - imported by numpy.core.numerictypes, numpy.core.numeric, scipy._lib.six, numpy.distutils.misc_util, numpy.lib.function_base, numpy.lib._iotools, numpy.ma.core, numpy, pkg_resources._vendor.pyparsing
 missing module named ordereddict - imported by pkg_resources._vendor.pyparsing
 missing module named __main__ - imported by pkg_resources
@@ -23,7 +23,7 @@ missing module named 'PyQt5.sip' - imported by c:\users\acarro12\appdata\local\p
 missing module named resource - imported by posix, C:\GitHub\MonsterCalc\MonsterCalc.py
 missing module named posix - imported by os, C:\GitHub\MonsterCalc\MonsterCalc.py
 missing module named _posixsubprocess - imported by subprocess, C:\GitHub\MonsterCalc\MonsterCalc.py, multiprocessing.util
-missing module named org - imported by pickle, C:\GitHub\MonsterCalc\MonsterCalc.py
+missing module named 'org.python' - imported by pickle, C:\GitHub\MonsterCalc\MonsterCalc.py, setuptools.sandbox, xml.sax
 missing module named readline - imported by cmd, code, pdb, C:\GitHub\MonsterCalc\MonsterCalc.py
 excluded module named _frozen_importlib - imported by importlib, importlib.abc, C:\GitHub\MonsterCalc\MonsterCalc.py
 missing module named _frozen_importlib_external - imported by importlib._bootstrap, importlib, importlib.abc, C:\GitHub\MonsterCalc\MonsterCalc.py
@@ -35,8 +35,8 @@ missing module named vms_lib - imported by platform, C:\GitHub\MonsterCalc\Monst
 missing module named termios - imported by tty, C:\GitHub\MonsterCalc\MonsterCalc.py, getpass
 missing module named urllib.splittag - imported by urllib, setuptools.py26compat
 missing module named grp - imported by shutil, tarfile, C:\GitHub\MonsterCalc\MonsterCalc.py, pathlib, distutils.archive_util
-missing module named 'org.python' - imported by copy, C:\GitHub\MonsterCalc\MonsterCalc.py, setuptools.sandbox, xml.sax
 missing module named pwd - imported by posixpath, shutil, tarfile, http.server, webbrowser, C:\GitHub\MonsterCalc\MonsterCalc.py, pathlib, distutils.util, distutils.archive_util, netrc, getpass
+missing module named org - imported by copy, C:\GitHub\MonsterCalc\MonsterCalc.py
 missing module named _dummy_threading - imported by dummy_threading, C:\GitHub\MonsterCalc\MonsterCalc.py
 missing module named numpy.core.object_ - imported by numpy.core, numpy.linalg.linalg
 missing module named numpy.core.intp - imported by numpy.core, numpy.linalg.linalg

@@ -214,7 +214,7 @@ class MainWindow(QMainWindow):
             self.editor.setSigFigs(int(text))
             self.saveSettings()
         return
-    
+
     def setConvXorToExp(self):
         if (self.editor.convXorToExp == 'True'):
             self.editor.convXorToExp = 'False'
@@ -261,14 +261,14 @@ class MainWindow(QMainWindow):
 
     def getResFormat(self):
         return self.editor.resFormat
-    
+
     def getConvXorToExp(self):
         return self.editor.convXorToExp
 
     def about(self):
         msgBox = QMessageBox()
         msgBox.setIconPixmap(self.monsterIco)
-        msgBox.setText('Monster Calc v1.3\nCreated by Andrew Carroll\n\n' +
+        msgBox.setText('Monster Calc v1.4\nCreated by Andrew Carroll\n\n' +
                        'Special thanks to Mom for the artwork!')
         msgBox.setWindowTitle('About')
         msgBox.exec()
