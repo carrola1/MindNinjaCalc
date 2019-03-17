@@ -1,5 +1,6 @@
 from binascii import hexlify, unhexlify
 import math
+from resistors import res1Per, resp1Per
 
 
 def mySum(*args):
@@ -23,6 +24,76 @@ def a2h(dataIn):
 
 def h2a(dataIn):
     return unhexlify("{0:0X}".format(dataIn))
+
+
+def findres(target_r, tol=1):
+    if (tol == 0.1):
+        resList = resp1Per
+    else:
+        resList = res1Per
+
+    # Find multiplier
+    multiplier = 0
+    for ii in range(0, 6):
+        if (target_r < 100):
+            break
+        else:
+            target_r = target_r/10
+            multiplier = multiplier + 1
+
+    closestMatch = 0
+    diff = 200
+
+    for ii in range(0, len(resList)):
+        if (abs(resList[ii] - target_r) < diff):
+            closestMatch = resList[ii]
+            diff = abs(resList[ii] - target_r)
+    return closestMatch*10**multiplier
+
+
+def vdiv(vin, r1, r2):
+    return vin - vin/(r1+r2)*r1
+
+
+def rpar(*argv):
+    sum = 0
+    for arg in argv:
+        sum = sum + 1/arg
+    return 1/sum
+
+
+def findrdiv(vin, vout, tol=1):
+    if (tol == .1):
+        resistors = resp1Per
+    else:
+        resistors = res1Per
+
+    resistorsBig = resistors + resistors*10 + resistors*100 + resistors*1000
+
+    ratio = vout/vin
+    matchR1 = 0
+    matchR2 = 0
+    bestDiff = 1e6
+
+    if (ratio <= .5):
+        for ii in range(0, len(resistors)):
+            for jj in reversed(range(ii, len(resistorsBig))):
+                newRatio = resistors[ii]/(resistorsBig[jj]+resistors[ii])
+                diff = abs(newRatio - ratio)
+                if (diff < bestDiff):
+                    bestDiff = diff
+                    matchR1 = resistorsBig[jj]
+                    matchR2 = resistors[ii]  
+    else:
+        for ii in range(0, len(resistorsBig)):
+            for jj in range(0, len(resistors)):
+                newRatio = resistorsBig[ii]/(resistors[jj]+resistorsBig[ii])
+                diff = abs(newRatio - ratio)
+                if (diff < bestDiff):
+                    bestDiff = diff
+                    matchR1 = resistors[jj]
+                    matchR2 = resistorsBig[ii]
+    return [matchR1, matchR2]
 
 
 def eng_string(x, sigFigs, format='%s', resFormat='engineering'):

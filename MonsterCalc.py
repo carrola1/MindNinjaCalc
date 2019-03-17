@@ -268,7 +268,7 @@ class MainWindow(QMainWindow):
     def about(self):
         msgBox = QMessageBox()
         msgBox.setIconPixmap(self.monsterIco)
-        msgBox.setText('Monster Calc v1.4\nCreated by Andrew Carroll\n\n' +
+        msgBox.setText('Monster Calc v1.6\nCreated by Andrew Carroll\n\n' +
                        'Special thanks to Mom for the artwork!')
         msgBox.setWindowTitle('About')
         msgBox.exec()

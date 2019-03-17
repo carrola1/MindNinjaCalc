@@ -1,11 +1,11 @@
 missing module named 'win32com.gen_py' - imported by win32com, c:\users\acarro12\appdata\local\programs\python\python36\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_win32comgenpy.py
 missing module named pyimod03_importers - imported by c:\users\acarro12\appdata\local\programs\python\python36\lib\site-packages\PyInstaller\loader\rthooks\pyi_rth_pkgres.py
-missing module named 'pkg_resources.extern.pyparsing' - imported by pkg_resources._vendor.packaging.requirements, pkg_resources._vendor.packaging.markers
-missing module named StringIO - imported by numpy.lib.utils, numpy.testing.utils, scipy._lib.six, numpy.lib.format, pkg_resources._vendor.six
-missing module named 'com.sun' - imported by pkg_resources._vendor.appdirs
-missing module named com - imported by pkg_resources._vendor.appdirs
 missing module named __builtin__ - imported by numpy.core.numerictypes, numpy.core.numeric, scipy._lib.six, numpy.distutils.misc_util, numpy.lib.function_base, numpy.lib._iotools, numpy.ma.core, numpy, pkg_resources._vendor.pyparsing
 missing module named ordereddict - imported by pkg_resources._vendor.pyparsing
+missing module named StringIO - imported by numpy.lib.utils, numpy.testing.utils, scipy._lib.six, numpy.lib.format, pkg_resources._vendor.six
+missing module named 'pkg_resources.extern.pyparsing' - imported by pkg_resources._vendor.packaging.requirements, pkg_resources._vendor.packaging.markers
+missing module named 'com.sun' - imported by pkg_resources._vendor.appdirs
+missing module named com - imported by pkg_resources._vendor.appdirs
 missing module named __main__ - imported by pkg_resources
 missing module named multiprocessing.SimpleQueue - imported by multiprocessing, concurrent.futures.process
 missing module named multiprocessing.set_start_method - imported by multiprocessing, multiprocessing.spawn

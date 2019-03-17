@@ -11,7 +11,7 @@ from PySide2.QtWidgets import QToolButton, QAction, QSplitter
 from PySide2.QtGui import QPixmap, QIcon, QFont
 from PySide2.QtCore import QSize, Qt
 from syntaxhighlighter import KeywordHighlighter
-from myfuncs import bitget, h2a, a2h, eng_string
+from myfuncs import bitget, h2a, a2h, eng_string, findres, findrdiv, vdiv, rpar
 from myfuncs import mySum as sum
 import re
 
@@ -26,6 +26,7 @@ class MainWidget(QWidget):
         self.textEdit = QTextEdit()
         self.resDisp = QTextEdit(readOnly=True)
         self.titleBar = QLabel()
+        self.eeTool = QToolButton()
         self.funcTool = QToolButton()
         self.symTool = QToolButton()
         self.unitTool = QToolButton()
@@ -40,11 +41,11 @@ class MainWidget(QWidget):
                       'sin', 'cos', 'tan', 'abs', 'asin', 'acos', 'atan',
                       'rad', 'deg', 'polar', 'rect', 'phase',
                       'hex', 'bin', 'min', 'max', 'sum', 'bitget', 'a2h',
-                      'h2a']
+                      'h2a', 'findres', 'findrdiv', 'rpar', 'vdiv']
         self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=',
                           '%', '\|']
         self.prefix = ['0x', '0b']
-        self.suffix = ['p', 'n', 'u', 'm', 'k', 'M']
+        self.suffix = ['p', 'n', 'u', 'm', 'k', 'M', 'G']
         self.tweener = ['e']
         self.symbols = ['ans', 'pi', 'e']
         self.unusual_syms = ['to']
@@ -107,7 +108,7 @@ class MainWidget(QWidget):
                                     'border: black;' +
                                     'selection-color: #212121;' +
                                     'selection-background-color: #c0c0c0')
-        self.resDisp.setStyleSheet('background-color: #a0a0a0;' +
+        self.resDisp.setStyleSheet('background-color: #b0b0b0;' +
                                    'font-size: 20px; border: black;' +
                                    'selection-color: white;' +
                                    'selection-background-color: #212121')
@@ -128,13 +129,14 @@ class MainWidget(QWidget):
             functionImage = QPixmap(
                 '/Users/Andrew/Documents/Python/MonsterCalc/Functions.png')
         funcIcon.addPixmap(functionImage)
-        self.funcTool.setText('Functions')
+        self.eeTool.setText('EE')
+        self.funcTool.setText('Math')
         self.symTool.setText('Symbols')
         self.unitTool.setText('Units')
         self.setStyleSheet(
             """
                 QToolButton {
-                    background-color: #a0a0a0;
+                    background-color: #b0b0b0;
                     font-family: "Lucida Console";
                     font-size: 18px;
                     color: #212121;
@@ -142,7 +144,7 @@ class MainWidget(QWidget):
 
                 QMenu {
                     background-color: #212121;
-                    color: #a0a0a0;
+                    color: #b0b0b0;
                     font-family: "Lucida Console";
                     border: 1px solid #000;
                 }
@@ -164,7 +166,7 @@ class MainWidget(QWidget):
             self.textEdit.verticalScrollBar().setValue)
 
         # Function Tool Button
-        funcT0 = QAction('MATH', self.funcTool)
+        funcT0 = QAction('GENERAL MATH', self.funcTool)
         func0 = QAction('floor:  Round down', self.funcTool)
         func1 = QAction('ceil:   Round up', self.funcTool)
         func2 = QAction('min:    Return list min', self.funcTool)
@@ -189,29 +191,44 @@ class MainWidget(QWidget):
         func19 = QAction('atan:   Arc-Tangent', self.funcTool)
         func20 = QAction('rad:    Convert deg to rad', self.funcTool)
         func21 = QAction('deg:    Convert rad to deg', self.funcTool)
-        funcT2 = QAction('PROGRAMMING', self.funcTool)
-        func22 = QAction('hex:    Convert to hex', self.funcTool)
-        func23 = QAction('bin:    Convert to bin', self.funcTool)
-        func24 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
-        func25 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
-        func26 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
 
         titleFont = QFont()
         titleFont.setBold(True)
         titleFont.setPixelSize(16)
         funcT0.setFont(titleFont)
         funcT1.setFont(titleFont)
-        funcT2.setFont(titleFont)
 
         funcs = [funcT0, func0, func1, func2, func3, func4, func5, func6,
                  func7, func8, func9, func10, func11, func12, func13, funcT1,
-                 func14, func15, func16, func17, func18, funcT2, func19,
-                 func20, func21, func22, func23, func24, func25, func26]
+                 func14, func15, func16, func17, func18, func19,
+                 func20, func21]
         for action in funcs:
             if (":" in action.text()):
                 action.triggered.connect(self.funcTriggered)
             self.funcTool.addAction(action)
         self.funcTool.setPopupMode(QToolButton.InstantPopup)
+
+        # EE Tool Button
+        eeT0 = QAction('ELECTRICAL', self.funcTool)
+        ee0 = QAction('findres: Closest std value (target, tol)', self.eeTool)
+        ee1 = QAction('vdiv: Calc voltage divider out (vin, R1, R2)', self.eeTool)
+        ee2 = QAction('rpar: Parallel resistor calc (R1, R2, R3...)', self.eeTool)
+        ee3 = QAction('findrdiv: Best R divider values (vin, vout, tol)', self.eeTool)
+        eeT1 = QAction('PROGRAMMING', self.funcTool)
+        ee4 = QAction('hex:    Convert to hex', self.funcTool)
+        ee5 = QAction('bin:    Convert to bin', self.funcTool)
+        ee6 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
+        ee7 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
+        ee8 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
+
+        eeT0.setFont(titleFont)
+        eeT1.setFont(titleFont)
+        ees = [eeT0, ee0, ee1, ee2, ee3, eeT1, ee4, ee5, ee6, ee7, ee8]
+        for action in ees:
+            if (":" in action.text()):
+                action.triggered.connect(self.eeTriggered)
+            self.eeTool.addAction(action)
+        self.eeTool.setPopupMode(QToolButton.InstantPopup)
 
         # Symbol Tool Button
         symT0 = QAction('MISC', self.symTool)
@@ -236,6 +253,7 @@ class MainWidget(QWidget):
         sym15 = QAction('m:     Milli (ex. 1m = 1e-3)', self.symTool)
         sym16 = QAction('k:     Killo (ex. 1k = 1e3)', self.symTool)
         sym17 = QAction('M:     Mega (ex. 1M = 1e6)', self.symTool)
+        sym18 = QAction('G:     Giga (ex. 1G = 1e9)', self.symTool)
 
         symT0.setFont(titleFont)
         symT1.setFont(titleFont)
@@ -244,7 +262,7 @@ class MainWidget(QWidget):
 
         syms = [symT0, sym0, sym1, symT1, sym2, sym3, sym4, symT2, sym5, sym6,
                 sym7, sym8, sym9, sym10, sym11, symT3, sym12, sym13, sym14,
-                sym15, sym16, sym17]
+                sym15, sym16, sym17, sym18]
         for action in syms:
             if (":" in action.text()):
                 action.triggered.connect(self.symTriggered)
@@ -305,16 +323,18 @@ class MainWidget(QWidget):
         grid = QGridLayout()
         self.setLayout(grid)
         self.titleBar.setFixedHeight(30)
-        self.funcTool.setFixedWidth(130)
-        self.symTool.setFixedWidth(130)
-        self.unitTool.setFixedWidth(130)
+        self.funcTool.setFixedWidth(100)
+        self.symTool.setFixedWidth(100)
+        self.unitTool.setFixedWidth(100)
+        self.eeTool.setFixedWidth(100)
         self.splitEdit.addWidget(self.textEdit)
         self.splitEdit.addWidget(self.resDisp)
         grid.addWidget(self.titleBar, 0, 0, Qt.AlignLeft)
         grid.addWidget(self.unitTool, 0, 2, Qt.AlignRight)
         grid.addWidget(self.symTool, 0, 3, Qt.AlignRight)
         grid.addWidget(self.funcTool, 0, 4, Qt.AlignRight)
-        grid.addWidget(self.splitEdit, 1, 0, 1, 5)
+        grid.addWidget(self.eeTool, 0, 5, Qt.AlignRight)
+        grid.addWidget(self.splitEdit, 1, 0, 1, 6)
 
     def updateResults(self):
         # Get text and break into lines
@@ -370,9 +390,11 @@ class MainWidget(QWidget):
     def evalExp(self, newExp, lineNum):
         try:
             # if 1st symbol is an operator, implicittly insert 'ans'
-            if newExp[0] in ['+', '-', '*', '<<', '>>', '^', '&', '/', '=',
+            # TODO: fix negative sign on first line
+            if newExp[0] in ['+', '*', '<<', '>>', '^', '&', '/', '=',
                           '%', '\|']:
                 newExp = 'ans' + newExp
+                #self.curText[lineNum] = newExp
 
             # Find and replace user-defined symbols with values
             # Also recognizes 'ans' and replaced with result from previous line
@@ -385,12 +407,14 @@ class MainWidget(QWidget):
                 newExp = re.sub(r'\b'+key+r'\b', self.userSyms[key], newExp)
 
             # scientific notations
+            newExp = re.sub(r'([.](?<!\d))', r'0.', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(p\b)', r'(\g<1>*10**-12)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(n\b)', r'(\g<1>*10**-9)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(u\b)', r'(\g<1>*10**-6)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(m\b)', r'(\g<1>*10**-3)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(k\b)', r'(\g<1>*10**3)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(M\b)', r'(\g<1>*10**6)', newExp)
+            newExp = re.sub(r'(\d+[.,]?\d*)(G\b)', r'(\g<1>*10**9)', newExp)
 
             if (self.convXorToExp == 'True'):
                 newExp = re.sub('\^', '**', newExp)
@@ -458,6 +482,13 @@ class MainWidget(QWidget):
         funcFullText = trigFunc.text()
         funcText = funcFullText.split(':')[0] + '('
         self.textEdit.insertPlainText(funcText)
+        return
+
+    def eeTriggered(self):
+        eeFunc = self.sender()
+        eeFullText = eeFunc.text()
+        eeText = eeFullText.split(':')[0] + '('
+        self.textEdit.insertPlainText(eeText)
         return
 
     def symTriggered(self):
