@@ -329,6 +329,7 @@ class MainWidget(QWidget):
         self.eeTool.setFixedWidth(100)
         self.splitEdit.addWidget(self.textEdit)
         self.splitEdit.addWidget(self.resDisp)
+        #self.splitEdit.setStretchFactor(0, 3)  # better to leave editor/display same width
         grid.addWidget(self.titleBar, 0, 0, Qt.AlignLeft)
         grid.addWidget(self.unitTool, 0, 2, Qt.AlignRight)
         grid.addWidget(self.symTool, 0, 3, Qt.AlignRight)
@@ -407,7 +408,7 @@ class MainWidget(QWidget):
                 newExp = re.sub(r'\b'+key+r'\b', self.userSyms[key], newExp)
 
             # scientific notations
-            newExp = re.sub(r'([.](?<!\d))', r'0.', newExp)
+            newExp = re.sub(r'((?<!\d)[.])', r'0.', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(p\b)', r'(\g<1>*10**-12)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(n\b)', r'(\g<1>*10**-9)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(u\b)', r'(\g<1>*10**-6)', newExp)
