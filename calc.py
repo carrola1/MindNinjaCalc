@@ -405,7 +405,7 @@ class MainWidget(QWidget):
                         self.resText[lineNum-1].split(' ')[0]
                 else:
                     self.userSyms['ans'] = 'None'
-                newExp = re.sub(r'\b'+key+r'\b', self.userSyms[key], newExp)
+                newExp = re.sub(r'\b'+key+r'\b', ('('+self.userSyms[key]+')'), newExp)
 
             # scientific notations
             newExp = re.sub(r'((?<!\d)[.])', r'0.', newExp)

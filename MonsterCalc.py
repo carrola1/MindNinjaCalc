@@ -130,9 +130,12 @@ class MainWindow(QMainWindow):
         programname = os.path.basename(__file__)
         programbase, ext = os.path.splitext(programname)
         settings = QSettings("company", programbase)
-        self.editor.sigFigs = settings.value("sig_figs")
-        self.editor.resFormat = settings.value("res_format")
-        self.editor.convXorToExp = settings.value("conv_xor_to_exp")
+        if (settings.value("sig_figs") != None):
+            self.editor.sigFigs = settings.value("sig_figs")
+        if (settings.value("res_format") != None):
+            self.editor.resFormat = settings.value("res_format")
+        if (settings.value("conv_xor_to_exp") != None):
+            self.editor.convXorToExp = settings.value("conv_xor_to_exp")
 
         sigFigAction = QAction('Significant Figures..', self)
         sigFigAction.triggered.connect(self.setSigFigs)
@@ -268,7 +271,7 @@ class MainWindow(QMainWindow):
     def about(self):
         msgBox = QMessageBox()
         msgBox.setIconPixmap(self.monsterIco)
-        msgBox.setText('Monster Calc v1.6\nCreated by Andrew Carroll\n\n' +
+        msgBox.setText('Monster Calc v1.7\nCreated by Andrew Carroll\n\n' +
                        'Special thanks to Mom for the artwork!')
         msgBox.setWindowTitle('About')
         msgBox.exec()
