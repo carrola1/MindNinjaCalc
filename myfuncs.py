@@ -10,7 +10,7 @@ def mySum(*args):
     return total
 
 
-def bitget(valIn, startBit, stopBit):
+def bitget(valIn, stopBit, startBit):
     mask = 0
     for ii in range(startBit, stopBit+1):
         mask += 2**ii

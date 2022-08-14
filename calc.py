@@ -217,7 +217,7 @@ class MainWidget(QWidget):
         eeT1 = QAction('PROGRAMMING', self.funcTool)
         ee4 = QAction('hex:    Convert to hex', self.funcTool)
         ee5 = QAction('bin:    Convert to bin', self.funcTool)
-        ee6 = QAction('bitget: Bit slice (value,lsb,msb)', self.funcTool)
+        ee6 = QAction('bitget: Bit slice (value,msb,lsb)', self.funcTool)
         ee7 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
         ee8 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
 
@@ -244,7 +244,7 @@ class MainWidget(QWidget):
         sym7 = QAction('<<:    Shift left (ex. 2 << 2 = 8)', self.symTool)
         sym8 = QAction('>>:    Shift right (ex. 8 >> 2 = 2)', self.symTool)
         sym9 = QAction('|:     Bitwise OR (ex. 8 | 1 = 9)', self.symTool)
-        sym10 = QAction('&:     Bitwise AND (ex. 5 & 1 = 1)', self.symTool)
+        sym10 = QAction('&&:     Bitwise AND (ex. 5 & 1 = 1)', self.symTool)
         sym11 = QAction('^:     Bitwise XOR (ex. 5 ^ 1 = 4)', self.symTool)
         symT3 = QAction('SCIENTIFIC NOTATION', self.symTool)
         sym12 = QAction('p:     Pico (ex. 1p = 1e-12)', self.symTool)
@@ -345,7 +345,7 @@ class MainWidget(QWidget):
         # Find changes and evaluate each line
         for ii, line in enumerate(textLines):
             if (line != self.curText[ii]):
-                self.curText[ii] = line
+              self.curText[ii] = line
             self.evalLine(ii)
         self.highlight.highlightBlock(text)
         # Clear unused lines
