@@ -1,6 +1,8 @@
 import sys
 import os
 import ctypes
+import keywords
+import toolButtons
 from math import pi, log2, ceil, floor, e
 from cmath import sqrt, sin, cos, tan, asin, acos, atan, exp, log, log10
 from cmath import phase, polar, rect
@@ -37,46 +39,16 @@ class MainWidget(QWidget):
         self.resText = ['']*self.maxLines
 
         # Supported functions and symbols
-        self.funcs = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'exp',
-                      'sin', 'cos', 'tan', 'abs', 'asin', 'acos', 'atan',
-                      'rad', 'deg', 'polar', 'rect', 'phase',
-                      'hex', 'bin', 'min', 'max', 'sum', 'bitget', 'a2h',
-                      'h2a', 'findres', 'findrdiv', 'rpar', 'vdiv']
-        self.operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=',
-                          '%', '\|']
-        self.prefix = ['0x', '0b']
-        self.suffix = ['p', 'n', 'u', 'm', 'k', 'M', 'G']
-        self.tweener = ['e']
-        self.symbols = ['ans', 'pi', 'e']
-        self.unusual_syms = ['to']
+        self.funcs = keywords.funcs
+        self.operators = keywords.operators
+        self.prefix = keywords.prefix
+        self.suffix = keywords.suffix
+        self.tweener = keywords.tweener
+        self.symbols = keywords.symbols
+        self.unusual_syms = keywords.unusual_syms
 
-        # Lenth Units (refereced to mm)
-        unitsLen = {'mm': '1', 'cm': '10', 'm': '1000', 'km': '1000000',
-                    'mil': '0.0254', 'in': '25.4', 'ft': '304.8'}
-        lenKeys = ['mm', 'cm', 'm', 'km', 'mil', 'in', 'ft']
-
-        # Volume Units (refereced to ml)
-        unitsVol = {'ml': '1', 'mL': '1', 'l': '1000', 'L': '1000',
-                    'c': '236.588', 'pt': '473.176', 'qt': '946.353',
-                    'gal': '3785.41', 'oz': '29.5735', 'tsp': '4.92892',
-                    'tbl': '14.7868'}
-        volKeys = ['ml', 'mL', 'l', 'L', 'c', 'pt', 'qt', 'gal', 'oz', 'tsp',
-                   'tbl']
-
-        # Mass Units (refereced to g)
-        unitsMass = {'mg': '.001', 'g': '1', 'kg': '1000', 'lbs': '453.592',
-                     'oz': '28.3495'}
-        massKeys = ['mg', 'g', 'kg', 'lbs', 'oz']
-
-        # Force Units (refereced to N)
-        unitsForce = {'N': '1', 'kN': '1000', 'lbf': '4.44822'}
-        forceKeys = ['N', 'kN', 'lbf']
-
-        # Temp Units (C to F unique since transform is not proportional)
-        tempKeys = ['C', 'F']
-
-        self.units = [unitsLen, unitsVol, unitsMass, unitsForce]
-        self.unitKeys = lenKeys + volKeys + massKeys + forceKeys + tempKeys
+        self.units = keywords.unitsList
+        self.unitKeys = keywords.unitKeys
 
         # Syntax Highlighter
         self.highlight = KeywordHighlighter(self.textEdit.document(),
@@ -166,42 +138,7 @@ class MainWidget(QWidget):
             self.textEdit.verticalScrollBar().setValue)
 
         # Function Tool Button
-        funcT0 = QAction('GENERAL MATH', self.funcTool)
-        func0 = QAction('floor:  Round down', self.funcTool)
-        func1 = QAction('ceil:   Round up', self.funcTool)
-        func2 = QAction('min:    Return list min', self.funcTool)
-        func3 = QAction('max:    Return list max', self.funcTool)
-        func4 = QAction('sum:    Return list sum', self.funcTool)
-        func5 = QAction('sqrt:   Square root', self.funcTool)
-        func6 = QAction('abs:    Absolute value', self.funcTool)
-        func7 = QAction('log:    Log base e', self.funcTool)
-        func8 = QAction('log10:  Log base 10', self.funcTool)
-        func9 = QAction('log2:   Log base 2', self.funcTool)
-        func10 = QAction('exp:    Exponential (e**x)', self.funcTool)
-        func11 = QAction('phase:  Phase of complex #', self.funcTool)
-        func12 = QAction('rect:   Complex polar to rect (mag,ang)',
-                         self.funcTool)
-        func13 = QAction('polar:  Complex rect to polar', self.funcTool)
-        funcT1 = QAction('GEOMETRY', self.funcTool)
-        func14 = QAction('sin:    Sine', self.funcTool)
-        func15 = QAction('cos:    Cosine', self.funcTool)
-        func16 = QAction('tan:    Tangent', self.funcTool)
-        func17 = QAction('asin:   Arc-Sine', self.funcTool)
-        func18 = QAction('acos:   Arc-Cosine', self.funcTool)
-        func19 = QAction('atan:   Arc-Tangent', self.funcTool)
-        func20 = QAction('rad:    Convert deg to rad', self.funcTool)
-        func21 = QAction('deg:    Convert rad to deg', self.funcTool)
-
-        titleFont = QFont()
-        titleFont.setBold(True)
-        titleFont.setPixelSize(16)
-        funcT0.setFont(titleFont)
-        funcT1.setFont(titleFont)
-
-        funcs = [funcT0, func0, func1, func2, func3, func4, func5, func6,
-                 func7, func8, func9, func10, func11, func12, func13, funcT1,
-                 func14, func15, func16, func17, func18, func19,
-                 func20, func21]
+        funcs = toolButtons.populateFuncButton(self.funcTool)
         for action in funcs:
             if (":" in action.text()):
                 action.triggered.connect(self.funcTriggered)
@@ -209,107 +146,23 @@ class MainWidget(QWidget):
         self.funcTool.setPopupMode(QToolButton.InstantPopup)
 
         # EE Tool Button
-        eeT0 = QAction('ELECTRICAL', self.funcTool)
-        ee0 = QAction('findres: Closest std value (target, tol)', self.eeTool)
-        ee1 = QAction('vdiv: Calc voltage divider out (vin, R1, R2)', self.eeTool)
-        ee2 = QAction('rpar: Parallel resistor calc (R1, R2, R3...)', self.eeTool)
-        ee3 = QAction('findrdiv: Best R divider values (vin, vout, tol)', self.eeTool)
-        eeT1 = QAction('PROGRAMMING', self.funcTool)
-        ee4 = QAction('hex:    Convert to hex', self.funcTool)
-        ee5 = QAction('bin:    Convert to bin', self.funcTool)
-        ee6 = QAction('bitget: Bit slice (value,msb,lsb)', self.funcTool)
-        ee7 = QAction('a2h:    Convert ASCII \'str\' to hex', self.funcTool)
-        ee8 = QAction('h2a:    Convert hex to ASCII', self.funcTool)
-
-        eeT0.setFont(titleFont)
-        eeT1.setFont(titleFont)
-        ees = [eeT0, ee0, ee1, ee2, ee3, eeT1, ee4, ee5, ee6, ee7, ee8]
+        ees = toolButtons.populateEEButton(self.eeTool)
         for action in ees:
             if (":" in action.text()):
                 action.triggered.connect(self.eeTriggered)
             self.eeTool.addAction(action)
         self.eeTool.setPopupMode(QToolButton.InstantPopup)
 
-        # Symbol Tool Button
-        symT0 = QAction('MISC', self.symTool)
-        sym0 = QAction('ans:   Result from previous line', self.symTool)
-        sym1 = QAction('to:    Unit conversion (ex. 5 mm to in)', self.symTool)
-        symT1 = QAction('MATH', self.symTool)
-        sym2 = QAction('**:    Power (ex. 2**3 = 8)', self.symTool)
-        sym3 = QAction('%:     Modulus (ex. 5 % 2 = 1)', self.symTool)
-        sym4 = QAction('e:     Exponent (ex. 5e-3 = 0.005)', self.symTool)
-        symT2 = QAction('PROGRAMMING', self.symTool)
-        sym5 = QAction('0x:    Hex (ex. 0x12 = 18)', self.symTool)
-        sym6 = QAction('0b:    Binary (ex. 0b101 = 5)', self.symTool)
-        sym7 = QAction('<<:    Shift left (ex. 2 << 2 = 8)', self.symTool)
-        sym8 = QAction('>>:    Shift right (ex. 8 >> 2 = 2)', self.symTool)
-        sym9 = QAction('|:     Bitwise OR (ex. 8 | 1 = 9)', self.symTool)
-        sym10 = QAction('&&:     Bitwise AND (ex. 5 & 1 = 1)', self.symTool)
-        sym11 = QAction('^:     Bitwise XOR (ex. 5 ^ 1 = 4)', self.symTool)
-        symT3 = QAction('SCIENTIFIC NOTATION', self.symTool)
-        sym12 = QAction('p:     Pico (ex. 1p = 1e-12)', self.symTool)
-        sym13 = QAction('n:     Nano (ex. 1n = 1e-9)', self.symTool)
-        sym14 = QAction('u:     Micro (ex. 1u = 1e-6)', self.symTool)
-        sym15 = QAction('m:     Milli (ex. 1m = 1e-3)', self.symTool)
-        sym16 = QAction('k:     Killo (ex. 1k = 1e3)', self.symTool)
-        sym17 = QAction('M:     Mega (ex. 1M = 1e6)', self.symTool)
-        sym18 = QAction('G:     Giga (ex. 1G = 1e9)', self.symTool)
-
-        symT0.setFont(titleFont)
-        symT1.setFont(titleFont)
-        symT2.setFont(titleFont)
-        symT3.setFont(titleFont)
-
-        syms = [symT0, sym0, sym1, symT1, sym2, sym3, sym4, symT2, sym5, sym6,
-                sym7, sym8, sym9, sym10, sym11, symT3, sym12, sym13, sym14,
-                sym15, sym16, sym17, sym18]
+        # Symbols Tool Button
+        syms = toolButtons.populateSymButton(self.symTool)
         for action in syms:
             if (":" in action.text()):
                 action.triggered.connect(self.symTriggered)
             self.symTool.addAction(action)
         self.symTool.setPopupMode(QToolButton.InstantPopup)
 
-        # Unit Tool Button
-        unitT0 = QAction('LENGTH', self.unitTool)
-        unit0 = QAction('mm:    Millimeters', self.unitTool)
-        unit1 = QAction('cm:    Centimeters', self.unitTool)
-        unit2 = QAction('m:     Meters', self.unitTool)
-        unit3 = QAction('km:    Killometers', self.unitTool)
-        unit4 = QAction('mil:   Thousandths of an inch', self.unitTool)
-        unit5 = QAction('in:    Inches', self.unitTool)
-        unitT1 = QAction('VOLUME', self.unitTool)
-        unit6 = QAction('mL:    Milliliter', self.unitTool)
-        unit7 = QAction('L:     Liter', self.unitTool)
-        unit8 = QAction('tsp:   Teaspoon', self.unitTool)
-        unit9 = QAction('tbl:   Tablespoon', self.unitTool)
-        unit10 = QAction('oz:    Fluid ounce', self.unitTool)
-        unit11 = QAction('pt:    Pint', self.unitTool)
-        unit12 = QAction('qt:    Quart', self.unitTool)
-        unit13 = QAction('gal:   Gallon', self.unitTool)
-        unitT2 = QAction('MASS', self.unitTool)
-        unit14 = QAction('mg:    Milligram', self.unitTool)
-        unit15 = QAction('g:     Gram', self.unitTool)
-        unit16 = QAction('kg:    Killogram', self.unitTool)
-        unit17 = QAction('oz:    Ounce', self.unitTool)
-        unit18 = QAction('lbs:   Pound', self.unitTool)
-        unitT3 = QAction('FORCE', self.unitTool)
-        unit19 = QAction('N:     Newton', self.unitTool)
-        unit20 = QAction('kN:    Killonewton', self.unitTool)
-        unit21 = QAction('lbf:   Pound force', self.unitTool)
-        unitT4 = QAction('TEMPERATURE', self.unitTool)
-        unit22 = QAction('C:     Degrees celsius', self.unitTool)
-        unit23 = QAction('F:     Degrees farenheit', self.unitTool)
-
-        unitT0.setFont(titleFont)
-        unitT1.setFont(titleFont)
-        unitT2.setFont(titleFont)
-        unitT3.setFont(titleFont)
-        unitT4.setFont(titleFont)
-
-        units = [unitT0, unit0, unit1, unit2, unit3, unit4, unit5, unitT1,
-                 unit6, unit7, unit8, unit9, unit10, unit11, unit12, unit13,
-                 unitT2, unit14, unit15, unit16, unit17, unit18, unitT3,
-                 unit19, unit20, unit21, unitT4, unit22, unit23]
+        # Units Tool Button
+        units = toolButtons.populateUnitButton(self.unitTool)
         for action in units:
             if (":" in action.text()):
                 action.triggered.connect(self.unitTriggered)
@@ -409,6 +262,10 @@ class MainWidget(QWidget):
 
             # scientific notations
             newExp = re.sub(r'((?<!\d)[.])', r'0.', newExp)
+            #newExp = re.sub(r'(\d+[.,]?\d*)(y\b)', r'(\g<1>*10**-24)', newExp) # yocto
+            #newExp = re.sub(r'(\d+[.,]?\d*)(z\b)', r'(\g<1>*10**-21)', newExp) # zepto
+            #newExp = re.sub(r'(\d+[.,]?\d*)(a\b)', r'(\g<1>*10**-18)', newExp) # atto
+            #newExp = re.sub(r'(\d+[.,]?\d*)(f\b)', r'(\g<1>*10**-15)', newExp) # femto
             newExp = re.sub(r'(\d+[.,]?\d*)(p\b)', r'(\g<1>*10**-12)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(n\b)', r'(\g<1>*10**-9)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(u\b)', r'(\g<1>*10**-6)', newExp)
@@ -416,6 +273,11 @@ class MainWidget(QWidget):
             newExp = re.sub(r'(\d+[.,]?\d*)(k\b)', r'(\g<1>*10**3)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(M\b)', r'(\g<1>*10**6)', newExp)
             newExp = re.sub(r'(\d+[.,]?\d*)(G\b)', r'(\g<1>*10**9)', newExp)
+            #newExp = re.sub(r'(\d+[.,]?\d*)(T\b)', r'(\g<1>*10**12)', newExp) # tera
+            #newExp = re.sub(r'(\d+[.,]?\d*)(P\b)', r'(\g<1>*10**15)', newExp) # Peta
+            #newExp = re.sub(r'(\d+[.,]?\d*)(E\b)', r'(\g<1>*10**18)', newExp) # Exa
+            #newExp = re.sub(r'(\d+[.,]?\d*)(Z\b)', r'(\g<1>*10**21)', newExp) # Zetta
+            #newExp = re.sub(r'(\d+[.,]?\d*)(Y\b)', r'(\g<1>*10**24)', newExp) # Yotta
 
             if (self.convXorToExp == 'True'):
                 newExp = re.sub('\^', '**', newExp)

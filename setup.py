@@ -3,7 +3,8 @@
 from cx_Freeze import setup, Executable
 import os
 
-includes_f = ['MonsterCalc.py', 'calc.py', 'syntaxhighlighter.py','myfuncs.py', 'resistors.py', 'MonsterCalc.png','Monster.png','Functions.png']
+includes_f = ['MonsterCalc.py', 'calc.py', 'keywords.py', 'syntaxhighlighter.py','myfuncs.py', 'resistors.py', 
+              'toolButtons.py', 'MonsterCalc.png','Monster.png','Functions.png']
 include_packs = ['sys','pyside2','binascii','calc','syntaxhighlighter','myfuncs']
 exclude_packs = ['matplotlib','numpy','pandas','scipy','statsmodels','notebook','lxml']
 
@@ -19,7 +20,7 @@ executables = [
 ]
 
 setup(name='MonsterCalc',
-      version = '1.7',
+      version = '1.9',
       description = 'Super calculator',
       options = dict(build_exe = buildOptions),
       executables = executables)
