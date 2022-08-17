@@ -66,7 +66,7 @@ class MainWidget(QWidget):
         self.sigFigs = 5
 
         # Set result formatting ('scientific', 'engineering', 'si')
-        self.resFormat = 'engineering'
+        self.resFormat = 'si'
 
         # Convert '^' to '**'
         self.convXorToExp = 'True'
@@ -182,7 +182,7 @@ class MainWidget(QWidget):
         self.eeTool.setFixedWidth(100)
         self.splitEdit.addWidget(self.textEdit)
         self.splitEdit.addWidget(self.resDisp)
-        #self.splitEdit.setStretchFactor(0, 3)  # better to leave editor/display same width
+        #self.splitEdit.setStretchFactor(0, 1)  # better to leave editor/display same width
         grid.addWidget(self.titleBar, 0, 0, Qt.AlignLeft)
         grid.addWidget(self.unitTool, 0, 2, Qt.AlignRight)
         grid.addWidget(self.symTool, 0, 3, Qt.AlignRight)

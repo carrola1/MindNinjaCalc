@@ -5,7 +5,7 @@ import sys
 import os
 import ctypes
 from PySide2.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
-from PySide2.QtWidgets import QInputDialog, QMessageBox
+from PySide2.QtWidgets import QInputDialog, QMessageBox, QCheckBox
 from PySide2.QtGui import QIcon, QPixmap
 from PySide2.QtCore import Qt, QSettings
 from calc import MainWidget
@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
 
         # Create main view and icon
         self.setWindowTitle("MONSTER CALC")
-        self.setGeometry(600, 300, 700, 500)
+        self.setGeometry(600, 300, 800, 500)
         self.setWindowTitle('MONSTER CALC')
         if ('win32' in sys.platform):
             path = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -128,14 +128,15 @@ class MainWindow(QMainWindow):
 
         # Settings menu
         programname = os.path.basename(__file__)
-        programbase, ext = os.path.splitext(programname)
-        settings = QSettings("company", programbase)
-        if (settings.value("sig_figs") != None):
-            self.editor.sigFigs = settings.value("sig_figs")
-        if (settings.value("res_format") != None):
-            self.editor.resFormat = settings.value("res_format")
-        if (settings.value("conv_xor_to_exp") != None):
-            self.editor.convXorToExp = settings.value("conv_xor_to_exp")
+        self.programbase, ext = os.path.splitext(programname)
+        self.settings = QSettings("company", self.programbase)
+        if (self.settings.value("sig_figs") != None):
+            self.editor.sigFigs = self.settings.value("sig_figs")
+        if (self.settings.value("res_format") != None):
+            self.editor.resFormat = self.settings.value("res_format")
+        if (self.settings.value("conv_xor_to_exp") != None):
+            self.editor.convXorToExp = self.settings.value("conv_xor_to_exp")
+
 
         sigFigAction = QAction('Significant Figures..', self)
         sigFigAction.triggered.connect(self.setSigFigs)
@@ -164,10 +165,18 @@ class MainWindow(QMainWindow):
         self.convXorToExpAction.triggered.connect(self.setConvXorToExp)
         settingsMenu.addAction(self.convXorToExpAction)
 
+        self.welcomeOnStartup = True
+
         # Help menu
         aboutAction = QAction('About', self)
         aboutAction.triggered.connect(self.about)
         helpMenu.addAction(aboutAction)
+
+        # Launch Welcome/demo screen
+        demoAction = QAction('Load Demo', self)
+        demoAction.triggered.connect(self.welcome)
+        helpMenu.addAction(demoAction)
+
 
     def openDialog(self):
         try:
@@ -252,12 +261,11 @@ class MainWindow(QMainWindow):
         return
 
     def saveSettings(self):
-        programname = os.path.basename(__file__)
-        programbase, ext = os.path.splitext(programname)
-        settings = QSettings("company", programbase)
-        settings.setValue('sig_figs', self.getSigFigs())
-        settings.setValue('res_format', self.getResFormat())
-        settings.setValue('conv_xor_to_exp', self.getConvXorToExp())
+        self.settings = QSettings("company", self.programbase)
+        self.settings.setValue('sig_figs', self.getSigFigs())
+        self.settings.setValue('res_format', self.getResFormat())
+        self.settings.setValue('conv_xor_to_exp', self.getConvXorToExp())
+        self.settings.setValue('welcome_on_startup', self.welcomeOnStartup)
 
     def getSigFigs(self):
         return self.editor.sigFigs
@@ -277,6 +285,24 @@ class MainWindow(QMainWindow):
         msgBox.exec()
         return
 
+    def welcome(self):
+        path = os.path.abspath(os.path.dirname(sys.argv[0]))
+        f = open(path + '\demo.txt', 'r')
+        with f:
+            self.editor.textEdit.setPlainText(f.read())
+        msgBox = QMessageBox()
+        msgBox.setIconPixmap(self.monsterIco)
+        msgBox.setText('Welcome to MonsterCalc! A demo sheet has been loaded ' +
+                       'to help you get started')
+        msgBox.setWindowTitle('Welcome')
+        checkBox = QCheckBox('Do not show demo again')
+        checkBox.setChecked(False)
+        msgBox.setCheckBox(checkBox)
+        msgBox.exec()
+        self.welcomeOnStartup = not(checkBox.checkState() == Qt.CheckState.Checked)
+        self.saveSettings()
+        return
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -286,4 +312,6 @@ if __name__ == '__main__':
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
     ex.show()
     ex.editor.textEdit.setFocus()
+    if (ex.settings.value("welcome_on_startup") == None) or (ex.settings.value("welcome_on_startup") == 'true'):
+        ex.welcome()
     sys.exit(app.exec_())
