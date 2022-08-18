@@ -10,7 +10,7 @@ from math import radians as rad
 from math import degrees as deg
 from PySide2.QtWidgets import QTextEdit, QGridLayout, QWidget, QLabel
 from PySide2.QtWidgets import QToolButton, QAction, QSplitter
-from PySide2.QtGui import QPixmap, QIcon, QFont
+from PySide2.QtGui import QPixmap, QIcon, QFont, QTextBlock
 from PySide2.QtCore import QSize, Qt
 from syntaxhighlighter import KeywordHighlighter
 from myfuncs import bitget, h2a, a2h, eng_string, findres, findrdiv, vdiv, rpar
@@ -198,9 +198,9 @@ class MainWidget(QWidget):
         # Find changes and evaluate each line
         for ii, line in enumerate(textLines):
             if (line != self.curText[ii]):
-              self.curText[ii] = line
+                self.curText[ii] = line
             self.evalLine(ii)
-        self.highlight.highlightBlock(text)
+        
         # Clear unused lines
         self.resText[len(textLines):] = ['']*(len(self.resText)-len(textLines))
 
@@ -208,6 +208,7 @@ class MainWidget(QWidget):
         newResults = "\n"
         newResults = newResults.join(self.resText[0:len(textLines)])
         self.resDisp.setPlainText(newResults)
+        
         return
 
     def evalLine(self, lineNum):
@@ -225,11 +226,12 @@ class MainWidget(QWidget):
                     pass    # In case variable doesn't exist
                 self.userSyms[newVar] = self.resText[lineNum]
                 self.symKeys[lineNum] = newVar
-                self.highlight.updateRules(self.symKeys)
             else:
-                self.symKeys[lineNum] = 'uu' + str(lineNum)
-                self.userSyms[newVar] = \
-                    self.userSyms.pop(self.symKeys[lineNum])
+                newVar = 'uu' + str(lineNum)
+                self.userSyms.pop(self.symKeys[lineNum])
+                self.symKeys[lineNum] = newVar
+                #self.userSyms[newVar] = \
+                
                 self.userSyms[newVar] = self.symKeys[lineNum]
         elif (' to ' in newLine):
             # Conversion detected
@@ -376,7 +378,7 @@ class MainWidget(QWidget):
         self.symKeys = [('uu' + str(i)) for i in range(0, self.maxLines)]
         for ii in range(0, self.maxLines):
             self.userSyms[self.symKeys[ii]] = self.symKeys[ii]
-        self.highlight.updateRules(self.symKeys)
+        #self.highlight.updateRules(self.symKeys)
         return
 
     def setSigFigs(self, digits):

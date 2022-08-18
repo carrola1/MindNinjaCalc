@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
 
         # Create main view and icon
         self.setWindowTitle("MONSTER CALC")
-        self.setGeometry(600, 300, 800, 500)
+        self.setGeometry(600, 300, 600, 500)
         self.setWindowTitle('MONSTER CALC')
         if ('win32' in sys.platform):
             path = os.path.abspath(os.path.dirname(sys.argv[0]))
@@ -290,6 +290,7 @@ class MainWindow(QMainWindow):
         f = open(path + '\demo.txt', 'r')
         with f:
             self.editor.textEdit.setPlainText(f.read())
+        self.setGeometry(500, 200, 850, 750)
         msgBox = QMessageBox()
         msgBox.setIconPixmap(self.monsterIco)
         msgBox.setText('Welcome to MonsterCalc! A demo sheet has been loaded ' +

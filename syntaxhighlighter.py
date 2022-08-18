@@ -46,6 +46,10 @@ class KeywordHighlighter (QSyntaxHighlighter):
                          for (pat, index, fmt) in rules]
 
         self.rules = self.intRules
+        self.state = 0
+
+        self.symKeys = {}
+
 
     def styleFormat(self, color, style=''):
         """Return a QTextCharFormat with the given attributes.
@@ -73,7 +77,15 @@ class KeywordHighlighter (QSyntaxHighlighter):
 
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.     """
-        # Do other syntax formatting
+        prevState = self.currentBlockState()
+        curState = self.state
+        self.setCurrentBlockState(curState)
+        self.state = self.state + 1
+
+        # Find changes and evaluate each line
+        self.evalLine(text, prevState, curState)
+        self.updateRules(list(self.symKeys.values()))
+
         for expression, nth, thisFormat in self.rules:
             index = expression.indexIn(text, 0)
             while index >= 0:
@@ -82,4 +94,15 @@ class KeywordHighlighter (QSyntaxHighlighter):
                 length = len(expression.cap(nth))
                 self.setFormat(index, length, thisFormat)
                 index = expression.indexIn(text, index + length)
-        self.setCurrentBlockState(0)
+
+        return
+
+    def evalLine(self, line, prevState, curState):
+        self.symKeys.pop(prevState, 0)
+        if ('=' in line):
+            # Variable assignment detected
+            line = line.split('=')
+            newVar = line[0].strip()
+            if ((newVar != '') & (' ' not in newVar)):
+                self.symKeys[curState] = newVar
+        return
