@@ -20,7 +20,8 @@ class KeywordHighlighter (QSyntaxHighlighter):
         self.styles = {'funcs': self.styleFormat('#64B5F6', 'bold'),
                        'operators': self.styleFormat('#FFA000'),
                        'userSyms': self.styleFormat('#9575CD', 'bold'),
-                       'symbols': self.styleFormat('#F44336')}
+                       'symbols': self.styleFormat('#F44336'),
+                       'comments': self.styleFormat('#808080')}
 
         rules = []
         # Keyword, operator, and brace rules
@@ -40,6 +41,7 @@ class KeywordHighlighter (QSyntaxHighlighter):
                   for u in self.units]
         rules += [(r'\b%s\b' % x, 0, self.styles['operators'])
                   for x in self.unusual_syms]
+        rules += [(r'#.*', 0, self.styles['comments'])]
 
         # Build a QRegExp for each pattern
         self.intRules = [(QRegExp(pat), index, fmt)
