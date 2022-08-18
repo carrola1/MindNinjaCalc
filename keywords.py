@@ -36,7 +36,7 @@ unitKeys = lenKeys + volKeys + massKeys + forceKeys + tempKeys
 # Supported functions and symbols
 funcs = ['floor', 'ceil', 'sqrt', 'log', 'log10', 'log2', 'exp',
          'sin', 'cos', 'tan', 'abs', 'asin', 'acos', 'atan',
-         'rad', 'deg', 'polar', 'rect', 'phase',
+         'rad', 'deg', 'polar', 'rect', 'phase', 'cdf', 'pdf',
          'hex', 'bin', 'min', 'max', 'sum', 'bitget', 'a2h',
          'h2a', 'findres', 'findrdiv', 'rpar', 'vdiv']
 operators = ['\+', '-', '\*', '<<', '>>', '\^', '\&', '/', '=',

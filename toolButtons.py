@@ -33,14 +33,18 @@ def populateFuncButton(funcTool: QToolButton):
     func19 = QAction('atan:   Arc-Tangent', funcTool)
     func20 = QAction('rad:    Convert deg to rad', funcTool)
     func21 = QAction('deg:    Convert rad to deg', funcTool)
+    funcT2 = QAction('PROBABILITY', funcTool)
+    func22 = QAction('cdf:    Normal cumulative distribution (std_dev)', funcTool)
+    func23 = QAction('pdf:    Normal probability distribution (std_dev)', funcTool)
 
     funcs = [funcT0, func0, func1, func2, func3, func4, func5, func6,
              func7, func8, func9, func10, func11, func12, func13, funcT1,
              func14, func15, func16, func17, func18, func19,
-             func20, func21]
+             func20, func21, funcT2, func22, func23]
 
     funcT0.setFont(titleFont)
     funcT1.setFont(titleFont)
+    funcT2.setFont(titleFont)
 
     return funcs
 

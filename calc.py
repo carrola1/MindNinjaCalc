@@ -8,6 +8,7 @@ from cmath import sqrt, sin, cos, tan, asin, acos, atan, exp, log, log10
 from cmath import phase, polar, rect
 from math import radians as rad
 from math import degrees as deg
+from scipy.stats import norm
 from PySide2.QtWidgets import QTextEdit, QGridLayout, QWidget, QLabel
 from PySide2.QtWidgets import QToolButton, QAction, QSplitter
 from PySide2.QtGui import QPixmap, QIcon, QFont, QTextBlock
@@ -15,8 +16,7 @@ from PySide2.QtCore import QSize, Qt
 from syntaxhighlighter import KeywordHighlighter
 from myfuncs import bitget, h2a, a2h, eng_string, findres, findrdiv, vdiv, rpar
 from myfuncs import mySum as sum
-import re
-
+import re 
 
 class MainWidget(QWidget):
     def __init__(self):
@@ -250,7 +250,6 @@ class MainWidget(QWidget):
             if newExp[0] in ['+', '*', '<<', '>>', '^', '&', '/', '=',
                           '%', '\|']:
                 newExp = 'ans' + newExp
-                #self.curText[lineNum] = newExp
 
             # Find and replace user-defined symbols with values
             # Also recognizes 'ans' and replaced with result from previous line
@@ -283,6 +282,9 @@ class MainWidget(QWidget):
 
             if (self.convXorToExp == 'True'):
                 newExp = re.sub('\^', '**', newExp)
+
+            newExp = newExp.replace("cdf(", "norm.cdf(")
+            newExp = newExp.replace("pdf(", "norm.pdf(")
 
             newResult = eval(newExp)
             try:
@@ -378,7 +380,6 @@ class MainWidget(QWidget):
         self.symKeys = [('uu' + str(i)) for i in range(0, self.maxLines)]
         for ii in range(0, self.maxLines):
             self.userSyms[self.symKeys[ii]] = self.symKeys[ii]
-        #self.highlight.updateRules(self.symKeys)
         return
 
     def setSigFigs(self, digits):
