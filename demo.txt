@@ -14,10 +14,13 @@ ans + 5	   # 'ans' references prev line
 abs(sqrt(sin(0.3*pi))*10)
 sum(100, 200)
 log2(16)
+2**3          # Exponent
 
 #Programming Examples
 0x10 >> 2            # shift right
 hex(0b110)          # binary -> hex
+bin(5)                  # binary conversion
+bin(5, 8)	 # binary, specify length
 bitget(0xA, 1, 0)  # Get 2 LSBs of 0xA
 a2h("test")           # ASCII -> hex
 

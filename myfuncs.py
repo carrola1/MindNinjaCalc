@@ -1,6 +1,23 @@
 from binascii import hexlify, unhexlify
 import math
+import builtins
 from resistors import res1Per, resp1Per
+
+
+def bin(val, len=None):
+    if (len is not None):
+        res = '0b' + f'{val:0{len}b}'
+    else:
+        res = builtins.bin(val)
+    return res
+
+
+def hex(val, len=None):
+    if (len is not None):
+        res = '0x' + f'{val:0{len}x}'
+    else:
+        res = builtins.hex(val)
+    return res
 
 
 def mySum(*args):

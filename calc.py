@@ -14,7 +14,8 @@ from PySide2.QtWidgets import QToolButton, QAction, QSplitter
 from PySide2.QtGui import QPixmap, QIcon, QFont, QTextBlock
 from PySide2.QtCore import QSize, Qt
 from syntaxhighlighter import KeywordHighlighter
-from myfuncs import bitget, h2a, a2h, eng_string, findres, findrdiv, vdiv, rpar
+from myfuncs import bitget, h2a, a2h, eng_string, findres, findrdiv
+from myfuncs import vdiv, rpar, bin, hex
 from myfuncs import mySum as sum
 import re 
 
