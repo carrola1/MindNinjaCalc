@@ -80,6 +80,7 @@ class MainWidget(QWidget):
                                     'border: black;' +
                                     'selection-color: #212121;' +
                                     'selection-background-color: #c0c0c0')
+        self.textEdit.setAcceptRichText(False)
         self.resDisp.setStyleSheet('background-color: #b0b0b0;' +
                                    'font-size: 20px; border: black;' +
                                    'selection-color: white;' +
