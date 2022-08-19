@@ -3,6 +3,7 @@
 
 import sys
 import os
+from stat import S_IREAD, S_IRGRP, S_IROTH
 import ctypes
 from PySide2.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
 from PySide2.QtWidgets import QInputDialog, QMessageBox, QCheckBox
@@ -167,7 +168,9 @@ class MainWindow(QMainWindow):
 
         self.welcomeOnStartup = True
 
-        # Help menu
+        ### Help menu ####
+
+        # About screen
         aboutAction = QAction('About', self)
         aboutAction.triggered.connect(self.about)
         helpMenu.addAction(aboutAction)
@@ -176,6 +179,11 @@ class MainWindow(QMainWindow):
         demoAction = QAction('Load Demo', self)
         demoAction.triggered.connect(self.welcome)
         helpMenu.addAction(demoAction)
+
+        # Launch release notes
+        releaseAction = QAction('Release Notes', self)
+        releaseAction.triggered.connect(self.release_notes)
+        helpMenu.addAction(releaseAction)
 
 
     def openDialog(self):
@@ -302,6 +310,12 @@ class MainWindow(QMainWindow):
         msgBox.exec()
         self.welcomeOnStartup = not(checkBox.checkState() == Qt.CheckState.Checked)
         self.saveSettings()
+        return
+
+    def release_notes(self):
+        path = os.path.abspath(os.path.dirname(sys.argv[0]))
+        os.chmod(path + '\\release_notes.txt', S_IREAD|S_IRGRP|S_IROTH)
+        os.startfile(path + '\\release_notes.txt', 'open')
         return
 
 
