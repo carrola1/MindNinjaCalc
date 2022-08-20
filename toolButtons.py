@@ -85,7 +85,7 @@ def populateSymButton(symTool: QToolButton):
     sym7 = QAction('<<:    Shift left (ex. 2 << 2 = 8)', symTool)
     sym8 = QAction('>>:    Shift right (ex. 8 >> 2 = 2)', symTool)
     sym9 = QAction('|:     Bitwise OR (ex. 8 | 1 = 9)', symTool)
-    sym10 = QAction('&&:     Bitwise AND (ex. 5 & 1 = 1)', symTool)
+    sym10 = QAction('&&:     Bitwise AND (ex. 5 && 1 = 1)', symTool)
     sym11 = QAction('^:     Bitwise XOR (ex. 5 ^ 1 = 4)', symTool)
     symT3 = QAction('SCIENTIFIC NOTATION', symTool)
     sym12 = QAction('p:     Pico (ex. 1p = 1e-12)', symTool)
@@ -139,16 +139,30 @@ def populateUnitButton(unitTool: QToolButton):
     unitT4 = QAction('TEMPERATURE', unitTool)
     unit22 = QAction('C:     Degrees celsius', unitTool)
     unit23 = QAction('F:     Degrees farenheit', unitTool)
+    unitT5 = QAction('MEMORY', unitTool)
+    unit24 = QAction('bits:  bits', unitTool)
+    unit25 = QAction('bytes: bytes', unitTool)
+    unit26 = QAction('KB:    IEC KiB (1024 bytes)', unitTool)
+    unit27 = QAction('MB:    IEC MiB', unitTool)
+    unit28 = QAction('GB:    IEC GiB', unitTool)
+    unit29 = QAction('TB:    IEC TiB', unitTool)
+    unit30 = QAction('Kb:    killobits (1000 bits)', unitTool)
+    unit31 = QAction('Mb:    megabits', unitTool)
+    unit32 = QAction('Gb:    gigabits', unitTool)
+    unit33 = QAction('Tb:    terabits', unitTool)
 
     unitT0.setFont(titleFont)
     unitT1.setFont(titleFont)
     unitT2.setFont(titleFont)
     unitT3.setFont(titleFont)
     unitT4.setFont(titleFont)
+    unitT5.setFont(titleFont)
 
     units = [unitT0, unit0, unit1, unit2, unit3, unit4, unit5, unitT1,
              unit6, unit7, unit8, unit9, unit10, unit11, unit12, unit13,
              unitT2, unit14, unit15, unit16, unit17, unit18, unitT3,
-             unit19, unit20, unit21, unitT4, unit22, unit23]
+             unit19, unit20, unit21, unitT4, unit22, unit23, unitT5, 
+             unit24, unit25, unit26, unit27, unit28, unit29, unit30,
+             unit31, unit32, unit33]
 
     return units

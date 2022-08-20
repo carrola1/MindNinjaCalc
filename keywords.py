@@ -24,11 +24,17 @@ massKeys = ['mg', 'g', 'kg', 'lbs', 'oz']
 unitsForce = {'N': '1', 'kN': '1000', 'lbf': '4.44822'}
 forceKeys = ['N', 'kN', 'lbf']
 
+# Memory Units
+unitsMem = {'bits': '.125', 'bytes': '1', 'KB': '1024', 'MB': '(1024**2)',
+            'GB': '(1024**3)', 'TB': '(1024**4)', 'Kb': '(1000*8)',
+            'Mb': '(1000**2*8)', 'Gb': '(1000**3*8)', 'Tb': '(1000**4*8)'}
+memKeys = ['bits', 'bytes', 'KB', 'MB', 'GB', 'TB', 'Kb', 'Mb', 'Gb', 'Tb']
+
 # Temp Units (C to F unique since transform is not proportional)
 tempKeys = ['C', 'F']
 
-unitsList = [unitsLen, unitsVol, unitsMass, unitsForce]
-unitKeys = lenKeys + volKeys + massKeys + forceKeys + tempKeys
+unitsList = [unitsLen, unitsVol, unitsMass, unitsForce, unitsMem]
+unitKeys = lenKeys + volKeys + massKeys + forceKeys + memKeys + tempKeys
 
 #################################################################
 # Functions and Symbols

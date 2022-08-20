@@ -9,6 +9,7 @@ ans + 5	   # 'ans' references prev line
 50 mm to in
 70 kg to lbs
 70 F to C
+1 KB to bits
 
 #Math Examples
 abs(sqrt(sin(0.3*pi))*10)
