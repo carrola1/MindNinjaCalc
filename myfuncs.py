@@ -5,6 +5,7 @@ from resistors import res1Per, resp1Per
 
 
 def bin(val, len=None):
+    val = math.floor(val)
     if (len is not None):
         res = '0b' + f'{val:0{len}b}'
     else:
@@ -13,6 +14,7 @@ def bin(val, len=None):
 
 
 def hex(val, len=None):
+    val = math.floor(val)
     if (len is not None):
         res = '0x' + f'{val:0{len}x}'
     else:
