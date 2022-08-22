@@ -115,6 +115,21 @@ def findrdiv(vin, vout, tol=1):
     return [matchR1, matchR2]
 
 
+def pdf(std_dev):
+    return 1/(math.sqrt(2*math.pi))*math.e**(-0.5*std_dev**2)
+
+
+def cdf(std_dev):
+    res = 0.0001
+    start = -20
+    numpts = round((std_dev - (start))/res)
+    xs = [start + x*res for x in range(0, numpts)]
+    tot = pdf(start)
+    for x in xs:
+        tot += pdf(x)*res
+    return tot
+
+
 def eng_string(x, sigFigs, format='%s', resFormat='engineering'):
     '''
     Returns float/int value <x> formatted in a simplified engineering format -

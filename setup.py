@@ -4,7 +4,7 @@ from cx_Freeze import setup, Executable
 import os
 
 includes_f = ['MonsterCalc.py', 'calc.py', 'keywords.py', 'syntaxhighlighter.py','myfuncs.py', 'resistors.py', 
-              'toolButtons.py', 'MonsterCalc.png','Monster.png','Functions.png']
+              'toolButtons.py', 'MonsterCalc.png','Monster.png','Functions.png', 'release_notes.txt', 'demo.txt']
 include_packs = ['sys','pyside2','binascii','calc','syntaxhighlighter','myfuncs']
 exclude_packs = ['matplotlib','numpy','pandas','scipy','statsmodels','notebook','lxml']
 

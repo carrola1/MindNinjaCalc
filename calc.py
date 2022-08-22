@@ -8,14 +8,14 @@ from cmath import sqrt, sin, cos, tan, asin, acos, atan, exp, log, log10
 from cmath import phase, polar, rect
 from math import radians as rad
 from math import degrees as deg
-from scipy.stats import norm
+#from scipy.stats import norm
 from PySide2.QtWidgets import QTextEdit, QGridLayout, QWidget, QLabel
-from PySide2.QtWidgets import QToolButton, QAction, QSplitter
-from PySide2.QtGui import QPixmap, QIcon, QFont, QTextBlock
-from PySide2.QtCore import QSize, Qt
+from PySide2.QtWidgets import QToolButton, QSplitter
+from PySide2.QtGui import QPixmap, QIcon
+from PySide2.QtCore import Qt
 from syntaxhighlighter import KeywordHighlighter
 from myfuncs import bitget, h2a, a2h, eng_string, findres, findrdiv
-from myfuncs import vdiv, rpar, bin, hex
+from myfuncs import vdiv, rpar, bin, hex, pdf, cdf
 from myfuncs import mySum as sum
 import re 
 
@@ -284,9 +284,6 @@ class MainWidget(QWidget):
 
             if (self.convXorToExp == 'True'):
                 newExp = re.sub('\^', '**', newExp)
-
-            newExp = newExp.replace("cdf(", "norm.cdf(")
-            newExp = newExp.replace("pdf(", "norm.pdf(")
 
             newResult = eval(newExp)
             try:
