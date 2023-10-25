@@ -3,6 +3,7 @@
 
 import sys
 import os
+import subprocess
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import ctypes
 from PySide2.QtWidgets import QApplication, QMainWindow, QAction, QFileDialog
@@ -32,15 +33,15 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("MONSTER CALC")
         self.setGeometry(600, 300, 600, 500)
         self.setWindowTitle('MONSTER CALC')
+        path = os.path.abspath(os.path.dirname(sys.argv[0]))
         if ('win32' in sys.platform):
-            path = os.path.abspath(os.path.dirname(sys.argv[0]))
             self.setWindowIcon(QIcon(path + '\Monster.png'))
             rawMonsterIco = QPixmap(path + '\Monster.png')
         else:
             self.setWindowIcon(
-                QIcon('/Users/Andrew/Documents/Python/MonsterCalc/Monster.png'))
+                QIcon(path + '/Monster.png'))
             rawMonsterIco = QPixmap(
-                '/Users/Andrew/Documents/Python/MonsterCalc/Monster.png')
+                path + '/Monster.png')
         self.monsterIco = rawMonsterIco.scaledToWidth(
             50, Qt.SmoothTransformation)
         self.saveName = ''
@@ -287,14 +288,17 @@ class MainWindow(QMainWindow):
     def about(self):
         msgBox = QMessageBox()
         msgBox.setIconPixmap(self.monsterIco)
-        msgBox.setText('Monster Calc v1.9 - Aug 2022\nCreated by Andrew Carroll')
+        msgBox.setText('Monster Calc v1.10 - Oct 2023\nCreated by Andrew Carroll')
         msgBox.setWindowTitle('About')
         msgBox.exec()
         return
 
     def welcome(self):
         path = os.path.abspath(os.path.dirname(sys.argv[0]))
-        f = open(path + '\demo.txt', 'r')
+        if ('win32' in sys.platform):
+          f = open(path + '\demo.txt', 'r')
+        else:
+          f = open(path + '/demo.txt', 'r')
         with f:
             self.editor.textEdit.setPlainText(f.read())
         self.setGeometry(500, 200, 850, 750)
@@ -313,8 +317,12 @@ class MainWindow(QMainWindow):
 
     def release_notes(self):
         path = os.path.abspath(os.path.dirname(sys.argv[0]))
-        os.chmod(path + '\\release_notes.txt', S_IREAD|S_IRGRP|S_IROTH)
-        os.startfile(path + '\\release_notes.txt', 'open')
+        if ('win32' in sys.platform):
+          os.chmod(path + '\\release_notes.txt', S_IREAD|S_IRGRP|S_IROTH)
+          os.startfile(path + '\\release_notes.txt', 'open')
+        else:
+          os.chmod(path + '/release_notes.txt', S_IREAD|S_IRGRP|S_IROTH)
+          subprocess.call(["xdg-open", (path + '/release_notes.txt')])
         return
 
 

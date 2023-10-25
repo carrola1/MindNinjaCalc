@@ -93,15 +93,13 @@ class MainWidget(QWidget):
         if ('win32' in sys.platform):
             monsterImage = QPixmap(path + "\MonsterCalc.png")
         else:
-            monsterImage = QPixmap(
-                '/Users/Andrew/Documents/Python/MonsterCalc/MonsterCalc.png')
+            monsterImage = QPixmap(path + "/MonsterCalc.PNG")
         self.titleBar.setPixmap(monsterImage)
         funcIcon = QIcon()
         if ('win32' in sys.platform):
             functionImage = QPixmap(path + "\Functions.png")
         else:
-            functionImage = QPixmap(
-                '/Users/Andrew/Documents/Python/MonsterCalc/Functions.png')
+            functionImage = QPixmap(path + "/Functions.png")
         funcIcon.addPixmap(functionImage)
         self.eeTool.setText('EE')
         self.funcTool.setText('Math')
